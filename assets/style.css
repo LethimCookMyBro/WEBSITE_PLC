@@ -892,13 +892,17 @@ textarea {
 .l-navbar__mobile-links {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2); /* Tighter spacing */
-  padding: 0 var(--space-4); /* Adjusted padding */
-  margin-bottom: var(--space-4);
+  align-items: center; /* Center align items */
+  gap: var(--space-6); /* Increased spacing for breathing room */
+  padding: var(--space-4);
+  margin-bottom: var(--space-6);
+  width: 100%;
 }
 
 .l-navbar__mobile-link {
-  padding: var(--space-4) var(--space-6);
+  width: 100%;
+  text-align: center;
+  padding: var(--space-3) var(--space-6);
   font-size: var(--text-lg); /* Slightly smaller text for better density */
   font-weight: 600;
   color: var(--text-primary);
@@ -1827,7 +1831,7 @@ textarea {
 }
 
 .l-pricing__card {
-  padding: var(--space-6);
+  padding: var(--space-10) var(--space-8); /* Increased padding for better proportions */
   position: relative;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1843,6 +1847,8 @@ textarea {
   transform: scale(1.05);
   background: var(--glass-bg);
   z-index: 1;
+  overflow: visible; /* Ensure Badge isn't cut off */
+  margin-top: -10px; /* Slight lift to emphasize pop */
 }
 
 .l-pricing__card--popular::before {
