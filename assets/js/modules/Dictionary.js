@@ -14,7 +14,7 @@ export const dictionary = {
     hero_badge_cited: "Cited Answers",
     hero_badge_speed: "~4s Avg Response",
     hero_badge_escalate: "Escalate to Expert",
-    hero_title: "Reduce PLC downtime with fast, cited troubleshooting answers.",
+    hero_title: "Panya",
     hero_subtitle:
       "PANYA is an intelligent RAG-based assistant that retrieves answers directly from PLC manuals and technical documentation. Get step-by-step guidance with source citations, and escalate to human experts when needed.",
     hero_cta_primary: "Try Prototype",
@@ -347,7 +347,7 @@ export const dictionary = {
     price_custom: "ประเมินราคา",
 
     // Plan 1
-    plan_starter_name: "Free",
+    plan_starter_name: "เริ่มต้น",
     plan_starter_desc: "สำหรับช่างเทคนิครายบุคคลและการแก้ไขปัญหาเบื้องต้น",
     plan_starter_f1: "สูงสุด 100 คำถาม/เดือน",
     plan_starter_f2: "รองรับ Mitsubishi PLC",
@@ -357,19 +357,19 @@ export const dictionary = {
 
     // Plan 2
     popular_badge: "คุ้มค่าที่สุด",
-    plan_pro_name: "Plan Pro",
+    plan_pro_name: "มืออาชีพ",
     plan_pro_desc: "สำหรับทีมบำรุงรักษาประจำโรงงานที่ต้องการบันทึก Audit Logs",
     plan_pro_f1: "ถามตอบไม่จำกัด",
     plan_pro_f2: "รองรับหลายแบรนด์ (Mitsubishi, Siemens, AB)",
     plan_pro_f3: "Audit logs และการอ้างอิงละเอียด",
     plan_pro_f4: "ส่งต่อผู้เชี่ยวชาญ (กรณีเร่งด่วน)",
     plan_pro_f5: "สนับสนุนทางอีเมล & แชท",
-    plan_cta_pro: "ทดลองใช้ Pro 14 วัน",
+    plan_cta_pro: "ทดลองใช้แพ็กเกจมืออาชีพ 14 วัน",
 
     // Plan 3
-    plan_enterprise_name: "Corporate Suite",
+    plan_enterprise_name: "สำหรับองค์กร",
     plan_enterprise_desc: "สำหรับองค์กรหลายสาขาที่เน้นความปลอดภัยข้อมูล",
-    plan_enterprise_f1: "ทุกฟีเจอร์ใน Plan Pro",
+    plan_enterprise_f1: "ทุกฟีเจอร์ในแพ็กเกจมืออาชีพ",
     plan_enterprise_f2: "ติดตั้ง Private Cloud / On-Premise",
     plan_enterprise_f3: "ทำ Index ฐานความรู้เฉพาะองค์กร",
     plan_enterprise_f4: "SSO (Okta/AD) & กำหนดสิทธิ์รายคน",
