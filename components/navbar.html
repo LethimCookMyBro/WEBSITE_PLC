@@ -1,0 +1,225 @@
+<nav
+  class="l-navbar"
+  id="navbar"
+  role="navigation"
+  aria-label="Main navigation"
+>
+  <div class="l-navbar__container">
+    <!-- Logo -->
+    <a href="#" class="l-navbar__logo" aria-label="PANYA Home">
+      <div class="l-navbar__logo-icon">
+        <i class="fas fa-microchip"></i>
+      </div>
+      <span class="l-navbar__logo-text">PANYA</span>
+    </a>
+
+    <!-- Desktop Navigation Links -->
+    <ul class="l-navbar__links" role="menubar">
+      <li role="none">
+        <a
+          href="#product"
+          class="l-navbar__link"
+          data-i18n="nav_product"
+          role="menuitem"
+        ></a>
+      </li>
+      <li role="none">
+        <a
+          href="#how-it-works"
+          class="l-navbar__link"
+          data-i18n="nav_how_it_works"
+          role="menuitem"
+        ></a>
+      </li>
+      <li role="none">
+        <a
+          href="#prototype"
+          class="l-navbar__link"
+          data-i18n="nav_prototype"
+          role="menuitem"
+        ></a>
+      </li>
+      <li role="none">
+        <a
+          href="#results"
+          class="l-navbar__link"
+          data-i18n="nav_results"
+          role="menuitem"
+        ></a>
+      </li>
+      <li role="none">
+        <a
+          href="#pricing"
+          class="l-navbar__link"
+          data-i18n="nav_pricing"
+          role="menuitem"
+        ></a>
+      </li>
+      <li role="none">
+        <a
+          href="#faq"
+          class="l-navbar__link"
+          data-i18n="nav_faq"
+          role="menuitem"
+        ></a>
+      </li>
+      <li role="none">
+        <a
+          href="#contact"
+          class="l-navbar__link"
+          data-i18n="nav_contact"
+          role="menuitem"
+        ></a>
+      </li>
+    </ul>
+
+    <!-- Right Side: Language Toggle + Theme Toggle + CTA -->
+    <div class="l-navbar__actions">
+      <!-- Theme Toggle -->
+      <button
+        class="c-theme-toggle"
+        id="themeToggle"
+        aria-label="Toggle dark mode"
+      >
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+
+      <!-- Language Toggle Pill -->
+      <div class="c-lang-toggle" role="group" aria-label="Language selection">
+        <div
+          class="c-lang-toggle__bg c-lang-toggle__bg--right"
+          id="langToggleBg"
+        ></div>
+        <button
+          class="c-lang-toggle__btn"
+          data-lang="th"
+          aria-pressed="false"
+          aria-label="Switch to Thai"
+        >
+          TH
+        </button>
+        <button
+          class="c-lang-toggle__btn c-lang-toggle__btn--active"
+          data-lang="en"
+          aria-pressed="true"
+          aria-label="Switch to English"
+        >
+          EN
+        </button>
+      </div>
+
+      <!-- CTA Button -->
+      <a
+        href="#contact"
+        class="c-btn c-btn--primary l-navbar__cta"
+        data-i18n="nav_cta"
+      ></a>
+
+      <!-- Mobile Menu Button -->
+      <button
+        class="l-navbar__menu-btn"
+        id="mobileMenuBtn"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+      >
+        <span class="l-navbar__menu-line"></span>
+        <span class="l-navbar__menu-line"></span>
+        <span class="l-navbar__menu-line"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu - Full Screen Overlay -->
+  <div class="l-navbar__mobile-menu" id="mobileMenu" aria-hidden="true">
+    <ul class="l-navbar__mobile-links">
+      <li>
+        <a
+          href="#product"
+          class="l-navbar__mobile-link"
+          data-i18n="nav_product"
+        ></a>
+      </li>
+      <li>
+        <a
+          href="#how-it-works"
+          class="l-navbar__mobile-link"
+          data-i18n="nav_how_it_works"
+        ></a>
+      </li>
+      <li>
+        <a
+          href="#prototype"
+          class="l-navbar__mobile-link"
+          data-i18n="nav_prototype"
+        ></a>
+      </li>
+      <li>
+        <a
+          href="#results"
+          class="l-navbar__mobile-link"
+          data-i18n="nav_results"
+        ></a>
+      </li>
+      <li>
+        <a
+          href="#pricing"
+          class="l-navbar__mobile-link"
+          data-i18n="nav_pricing"
+        ></a>
+      </li>
+      <li>
+        <a href="#faq" class="l-navbar__mobile-link" data-i18n="nav_faq"></a>
+      </li>
+      <li>
+        <a
+          href="#contact"
+          class="l-navbar__mobile-link"
+          data-i18n="nav_contact"
+        ></a>
+      </li>
+    </ul>
+
+    <!-- Mobile Actions (Theme + Language) -->
+    <div class="l-navbar__mobile-actions">
+      <!-- Mobile Theme Toggle -->
+      <button
+        class="c-theme-toggle"
+        id="mobileThemeToggle"
+        aria-label="Toggle dark mode"
+      >
+        <i class="fas fa-moon" id="mobileThemeIcon"></i>
+      </button>
+
+      <!-- Mobile Language Toggle -->
+      <div class="c-lang-toggle" role="group" aria-label="Language selection">
+        <div
+          class="c-lang-toggle__bg c-lang-toggle__bg--right"
+          id="mobileLangToggleBg"
+        ></div>
+        <button
+          class="c-lang-toggle__btn"
+          data-lang="th"
+          aria-pressed="false"
+          aria-label="Switch to Thai"
+        >
+          TH
+        </button>
+        <button
+          class="c-lang-toggle__btn c-lang-toggle__btn--active"
+          data-lang="en"
+          aria-pressed="true"
+          aria-label="Switch to English"
+        >
+          EN
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile CTA -->
+    <a
+      href="#contact"
+      class="c-btn c-btn--primary l-navbar__mobile-cta"
+      data-i18n="nav_cta"
+    ></a>
+  </div>
+</nav>

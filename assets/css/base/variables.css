@@ -1,0 +1,138 @@
+/* ============================================
+   PANYA - Design Tokens & CSS Variables
+   ============================================ */
+
+:root {
+  /* Core Colors */
+  --navy-900: #0a1628;
+  --navy-800: #0f1d33;
+  --navy-700: #162544;
+  --navy-600: #1e3055;
+  --charcoal: #2d3748;
+
+  /* Gray Scale */
+  --gray-900: #1a202c;
+  --gray-700: #4a5568;
+  --gray-500: #718096;
+  --gray-400: #a0aec0;
+  --gray-300: #cbd5e0;
+  --gray-200: #e2e8f0;
+  --gray-100: #f7fafc;
+  --gray-50: #fafbfc;
+  --white: #ffffff;
+
+  /* Accent Colors */
+  --blue-600: #2563eb;
+  --blue-500: #3b82f6;
+  --blue-400: #60a5fa;
+  --blue-300: #93c5fd;
+  --blue-100: #dbeafe;
+  --blue-50: #eff6ff;
+
+  /* Semantic Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+
+  /* Typography */
+  --font-main:
+    "Inter", "Noto Sans Thai", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-thai: "Noto Sans Thai", sans-serif;
+
+  /* Font Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index Scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-navbar: 1000;
+  --z-modal: 2000;
+  --z-toast: 3000;
+}
+
+/* ============================================
+   THEME VARIABLES
+   ============================================ */
+
+/* Light Theme (Default) */
+[data-theme="light"] {
+  --bg-primary: var(--gray-50);
+  --bg-secondary: var(--white);
+  --bg-tertiary: var(--gray-100);
+
+  --text-primary: var(--navy-900);
+  --text-secondary: var(--gray-700);
+  --text-tertiary: var(--gray-500);
+
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 8px 32px rgba(10, 22, 40, 0.08);
+  --glass-shadow-lg: 0 20px 60px rgba(10, 22, 40, 0.12);
+
+  --nav-bg: transparent;
+  --nav-bg-scrolled: rgba(255, 255, 255, 0.85);
+
+  --input-bg: var(--white);
+  --input-border: var(--gray-300);
+  --input-focus: var(--blue-500);
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-primary: var(--navy-900);
+  --bg-secondary: var(--navy-800);
+  --bg-tertiary: var(--navy-700);
+
+  --text-primary: var(--white);
+  --text-secondary: var(--gray-300);
+  --text-tertiary: var(--gray-400);
+
+  --glass-bg: rgba(15, 29, 51, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
+
+  --nav-bg: transparent;
+  --nav-bg-scrolled: rgba(10, 22, 40, 0.9);
+
+  --input-bg: var(--navy-700);
+  --input-border: var(--navy-600);
+  --input-focus: var(--blue-400);
+}

@@ -1,0 +1,108 @@
+<section
+  class="l-contact u-section"
+  id="contact"
+  aria-labelledby="contact-title"
+>
+  <div class="u-container">
+    <div class="c-section-header">
+      <span class="c-section-label" data-i18n="contact_label"></span>
+      <h2
+        class="c-section-title"
+        id="contact-title"
+        data-i18n="contact_title"
+      ></h2>
+      <p class="c-section-subtitle" data-i18n="contact_subtitle"></p>
+    </div>
+
+    <div class="l-contact__grid">
+      <div class="l-contact__form-wrapper c-glass-card">
+        <form class="l-contact__form" id="contactForm" novalidate>
+          <div class="l-contact__form-row">
+            <div class="l-contact__group">
+              <label for="name" data-i18n="form_name_label"></label>
+              <input type="text" id="name" name="name" required />
+              <span class="l-contact__error" data-i18n="form_name_error"></span>
+            </div>
+            <div class="l-contact__group">
+              <label for="job_title" data-i18n="form_job_label"></label>
+              <input type="text" id="job_title" name="job_title" required />
+              <span class="l-contact__error" data-i18n="form_job_error"></span>
+            </div>
+          </div>
+
+          <div class="l-contact__group">
+            <label for="company" data-i18n="form_company_label"></label>
+            <input type="text" id="company" name="company" required />
+          </div>
+
+          <div class="l-contact__form-row">
+            <div class="l-contact__group">
+              <label for="email" data-i18n="form_email_label"></label>
+              <input type="email" id="email" name="email" required />
+              <span
+                class="l-contact__error"
+                data-i18n="form_email_error"
+              ></span>
+            </div>
+            <div class="l-contact__group">
+              <label for="phone" data-i18n="form_phone_label"></label>
+              <input type="tel" id="phone" name="phone" required />
+              <span
+                class="l-contact__error"
+                data-i18n="form_phone_error"
+              ></span>
+            </div>
+          </div>
+
+          <div class="l-contact__group">
+            <label for="message" data-i18n="form_message_label"></label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+            <span
+              class="l-contact__error"
+              data-i18n="form_message_error"
+            ></span>
+          </div>
+          <button
+            type="submit"
+            class="c-btn c-btn--primary c-btn--lg c-btn--block"
+          >
+            <span data-i18n="form_submit"></span>
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </form>
+
+        <div class="l-contact__success" id="formSuccess">
+          <i class="fas fa-check-circle"></i>
+          <h3 data-i18n="form_success_title"></h3>
+          <p data-i18n="form_success_text"></p>
+        </div>
+      </div>
+
+      <div class="l-contact__info">
+        <div class="l-contact__card c-glass-card">
+          <div class="l-contact__card-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <h4 data-i18n="contact_email_title"></h4>
+          <p>hello@panya.ai</p>
+        </div>
+
+        <div class="l-contact__card c-glass-card">
+          <div class="l-contact__card-icon">
+            <i class="fas fa-phone"></i>
+          </div>
+          <h4 data-i18n="contact_phone_title"></h4>
+          <p>+66 2 123 4567</p>
+        </div>
+
+        <div class="l-contact__card c-glass-card">
+          <div class="l-contact__card-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <h4 data-i18n="contact_location_title"></h4>
+          <p data-i18n="contact_location_text"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
