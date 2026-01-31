@@ -53,6 +53,7 @@ const ComponentLoader = {
     console.log(`✅ All components loaded in ${loadTime}ms`);
 
     // Dispatch event when all components are loaded
+    window.ComponentsLoaded = true;
     document.dispatchEvent(new CustomEvent("componentsLoaded"));
   },
 
