@@ -174,16 +174,29 @@
 }
 
 @media (max-width: 1024px) {
-  /* Hide desktop nav elements - but NOT globally, only in navbar container */
+  /* Hide desktop nav elements */
   .l-navbar__links,
   .l-navbar__cta {
     display: none !important;
   }
 
-  /* Hide toggles only in the navbar actions area, not in mobile menu */
-  .l-navbar__actions > .c-lang-toggle,
+  /* SHOW toggles in navbar on mobile - compact size */
   .l-navbar__actions > .c-theme-toggle {
-    display: none !important;
+    display: flex !important;
+    width: 36px;
+    height: 36px;
+    font-size: var(--text-base);
+  }
+
+  .l-navbar__actions > .c-lang-toggle {
+    display: flex !important;
+    transform: scale(0.85);
+  }
+
+  .l-navbar__actions > .c-lang-toggle .c-lang-toggle__btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-xs);
+    min-width: 36px;
   }
 
   .l-navbar__menu-btn {
@@ -194,7 +207,7 @@
     padding: 0 var(--space-4);
   }
 
-  /* Ensure mobile menu toggles are visible */
+  /* Also keep mobile menu toggles visible */
   .l-navbar__mobile-actions .c-theme-toggle,
   .l-navbar__mobile-actions .c-lang-toggle {
     display: flex !important;
