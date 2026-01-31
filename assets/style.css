@@ -901,24 +901,35 @@ textarea {
 
 .l-navbar__mobile-link {
   width: 100%;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; /* Keep centered as requested */
+  gap: var(--space-3); /* Space between icon and text */
   padding: var(--space-3) var(--space-6);
-  font-size: var(--text-lg); /* Slightly smaller text for better density */
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--text-tertiary); /* Muted color for icons/text initially */
   border-radius: var(--radius-lg);
-  background: transparent; /* Remove heavy glass effect backgrounds */
+  background: transparent;
   border: 1px solid transparent;
-  transition:
-    color 0.2s ease,
-    background 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.l-navbar__mobile-link i {
+  font-size: 1.25em; /* Slightly larger icon */
+  color: var(--gray-400);
+  transition: color 0.2s ease;
 }
 
 .l-navbar__mobile-link:hover,
 .l-navbar__mobile-link:active {
   background: var(--blue-50);
   color: var(--blue-600);
-  /* Removed complex border/translate effects */
+}
+
+.l-navbar__mobile-link:hover i,
+.l-navbar__mobile-link:active i {
+  color: var(--blue-600);
 }
 
 [data-theme="dark"] .l-navbar__mobile-link:hover,
