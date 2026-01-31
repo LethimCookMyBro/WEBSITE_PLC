@@ -1,0 +1,106 @@
+/* ============================================
+   FAQ Section
+   ============================================ */
+
+.l-faq {
+  background: linear-gradient(
+    180deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
+}
+
+.l-faq__list {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.l-faq__item {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.l-faq__item:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
+}
+
+.l-faq__item--active {
+  border-color: var(--blue-500);
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.15);
+}
+
+.l-faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-6);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.l-faq__question:hover {
+  color: var(--blue-600);
+}
+
+.l-faq__item--active .l-faq__question {
+  color: var(--blue-600);
+}
+
+.l-faq__icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.l-faq__item:hover .l-faq__icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--blue-500);
+}
+
+.l-faq__item--active .l-faq__icon {
+  transform: rotate(180deg);
+  background: var(--blue-500);
+  color: var(--white);
+}
+
+.l-faq__answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.l-faq__item--active .l-faq__answer {
+  grid-template-rows: 1fr;
+}
+
+.l-faq__answer-inner {
+  overflow: hidden;
+}
+
+.l-faq__answer p {
+  padding: 0 var(--space-6) var(--space-6);
+  font-size: var(--text-base);
+  color: var(--text-tertiary);
+  line-height: 1.7;
+  animation: fadeInContent 0.4s ease-out;
+}

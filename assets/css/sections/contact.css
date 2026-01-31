@@ -1,0 +1,111 @@
+/* ============================================
+   Contact Section
+   ============================================ */
+
+.l-contact {
+  background: var(--bg-secondary);
+}
+
+.l-contact__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-8);
+}
+
+.l-contact__form-wrapper {
+  padding: var(--space-8);
+}
+
+.l-contact__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.l-contact__form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+/* Form Success */
+.l-contact__success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12);
+}
+
+.l-contact__success--active {
+  display: flex;
+}
+
+.l-contact__success i {
+  font-size: var(--text-6xl);
+  color: var(--success);
+  margin-bottom: var(--space-6);
+}
+
+.l-contact__success h3 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.l-contact__success p {
+  font-size: var(--text-base);
+  color: var(--text-tertiary);
+}
+
+.l-contact__form--success {
+  display: none;
+}
+
+/* Contact Info */
+.l-contact__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.l-contact__card {
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.l-contact__card-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+  background: linear-gradient(135deg, var(--blue-50) 0%, var(--blue-100) 100%);
+  color: var(--blue-600);
+  font-size: var(--text-xl);
+  border-radius: var(--radius-lg);
+}
+
+[data-theme="dark"] .l-contact__card-icon {
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.2) 0%,
+    rgba(37, 99, 235, 0.3) 100%
+  );
+}
+
+.l-contact__card h4 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-2);
+}
+
+.l-contact__card p {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-primary);
+}

@@ -1,0 +1,113 @@
+/* ============================================
+   Footer Section
+   ============================================ */
+
+.l-footer {
+  background: var(--navy-900);
+  color: var(--white);
+  padding: var(--space-16) 0 var(--space-8);
+}
+
+.l-footer__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr;
+  gap: var(--space-12);
+  margin-bottom: var(--space-12);
+}
+
+.l-footer__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.l-footer__logo .l-navbar__logo-icon {
+  background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-400) 100%);
+}
+
+.l-footer__logo .l-navbar__logo-text {
+  color: var(--white);
+}
+
+.l-footer__tagline {
+  font-size: var(--text-base);
+  color: var(--gray-400);
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.l-footer__links h4 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: var(--space-4);
+}
+
+.l-footer__links ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.l-footer__links a {
+  font-size: var(--text-sm);
+  color: var(--gray-400);
+  transition: color var(--transition-fast);
+}
+
+.l-footer__links a:hover {
+  color: var(--white);
+}
+
+.l-footer__team h4 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: var(--space-4);
+}
+
+.l-footer__team p {
+  font-size: var(--text-sm);
+  color: var(--gray-400);
+  line-height: 1.6;
+}
+
+.l-footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--navy-700);
+}
+
+.l-footer__copyright {
+  font-size: var(--text-sm);
+  color: var(--gray-500);
+}
+
+.l-footer__social {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.l-footer__social a {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-400);
+  background: var(--navy-800);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.l-footer__social a:hover {
+  color: var(--white);
+  background: var(--blue-600);
+}

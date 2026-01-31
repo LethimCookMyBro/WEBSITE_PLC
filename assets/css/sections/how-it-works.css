@@ -1,0 +1,60 @@
+/* ============================================
+   How It Works Section
+   ============================================ */
+
+.l-how {
+  background: linear-gradient(
+    180deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
+}
+
+.l-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.l-timeline__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.l-timeline__marker {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%);
+  border-radius: 50%;
+}
+
+.l-timeline__number {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--white);
+}
+
+.l-timeline__content {
+  flex: 1;
+  padding: var(--space-6);
+}
+
+.l-timeline__title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.l-timeline__text {
+  font-size: var(--text-base);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}

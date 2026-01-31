@@ -355,7 +355,7 @@ export const dictionary = {
     plan_starter_f4: "สนับสนุนผ่าน Community Forum",
     plan_cta_start: "เริ่มใช้งานฟรี",
 
-    // Plan 2
+    // Plan
     popular_badge: "คุ้มค่าที่สุด",
     plan_pro_name: "มืออาชีพ",
     plan_pro_desc: "สำหรับทีมบำรุงรักษาประจำโรงงานที่ต้องการบันทึก Audit Logs",
