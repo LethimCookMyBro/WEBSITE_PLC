@@ -1862,6 +1862,11 @@ textarea {
   margin-top: -10px; /* Slight lift to emphasize pop */
 }
 
+/* Disable the default glass sheen on the popular card to prevent overflow artifacts */
+.l-pricing__card--popular.c-glass-card::after {
+  display: none;
+}
+
 .l-pricing__card--popular::before {
   content: "";
   position: absolute;
