@@ -1,10 +1,12 @@
 /**
- * PANYA PLC Support Backend
- * Main Server Entry Point
+ * PANYA PLC Support - Unified Server
+ * Serves both Frontend and API
  */
 
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { config } from "dotenv";
 import {
   initDatabase,
@@ -22,36 +24,46 @@ import leadsRoutes from "./routes/leads.js";
 
 config();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 app.set("trust proxy", 1);
 
-// CORS - Allow all origins for development
+// CORS
 app.use(cors({ origin: "*", credentials: true }));
 
 // Body parsing
 app.use(express.json());
+
+// ==========================================
+// STATIC FILES - Serve Frontend
+// ==========================================
+
+// Main website (root folder)
+app.use(express.static(path.join(__dirname, "..")));
+
+// Admin dashboard
+app.use("/admin", express.static(path.join(__dirname, "..", "admin")));
+
+// ==========================================
+// API ROUTES
+// ==========================================
 
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Dashboard stats for PLC Support
+// Dashboard stats
 app.get("/api/dashboard/stats", (req, res) => {
   try {
-    // Total queries today
     const today = new Date().toISOString().split("T")[0];
     const queriesResult = queryOne(
-      `
-      SELECT COUNT(*) as count FROM chat_logs 
-      WHERE date(created_at) = date(?)
-    `,
+      `SELECT COUNT(*) as count FROM chat_logs WHERE date(created_at) = date(?)`,
       [today],
     ) || { count: 0 };
 
-    // Resolution rate
     const resolved = queryOne(
       `SELECT COUNT(*) as count FROM chat_logs WHERE resolved = 1`,
       [],
@@ -62,19 +74,13 @@ app.get("/api/dashboard/stats", (req, res) => {
     const resolvedRate =
       total.count > 0 ? Math.round((resolved.count / total.count) * 100) : 94;
 
-    // New leads (from contact form)
     const leadsResult = queryOne(
-      `
-      SELECT COUNT(*) as count FROM leads WHERE status = 'new'
-    `,
+      `SELECT COUNT(*) as count FROM leads WHERE status = 'new'`,
       [],
     ) || { count: 0 };
 
-    // Average response time
     const avgTimeResult = queryOne(
-      `
-      SELECT AVG(response_time_ms) as avg FROM chat_logs
-    `,
+      `SELECT AVG(response_time_ms) as avg FROM chat_logs`,
       [],
     ) || { avg: 1200 };
 
@@ -86,7 +92,6 @@ app.get("/api/dashboard/stats", (req, res) => {
     });
   } catch (error) {
     console.error("Stats error:", error);
-    // Return demo stats on error
     res.json({
       totalQueries: 247,
       resolvedRate: 94,
@@ -100,9 +105,25 @@ app.get("/api/dashboard/stats", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/leads", leadsRoutes);
 
-// 404
+// API 404
 app.use("/api/*", (req, res) => {
   res.status(404).json({ error: "Not found" });
+});
+
+// ==========================================
+// SPA FALLBACK - Serve index.html for routes
+// ==========================================
+app.get("/admin/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "admin", "index.html"));
+});
+
+app.get("*", (req, res) => {
+  // Only serve index.html for non-file requests
+  if (!req.path.includes(".")) {
+    res.sendFile(path.join(__dirname, "..", "index.html"));
+  } else {
+    res.status(404).send("Not found");
+  }
 });
 
 // Error handler
@@ -118,7 +139,6 @@ async function seedDemoData() {
 
   const { v4: uuid } = await import("uuid");
 
-  // Add demo leads
   const leads = [
     {
       name: "สมชาย ใจดี",
@@ -153,7 +173,6 @@ async function seedDemoData() {
     );
   }
 
-  // Add demo chat logs
   const chats = [
     { query: "FX5U communication timeout", resolved: 1, time: 850 },
     { query: "Q03UDE stuck in RUN mode", resolved: 1, time: 1200 },
@@ -181,13 +200,13 @@ async function start() {
 
     app.listen(PORT, () => {
       console.log(`
-╔════════════════════════════════════════╗
-║   PANYA PLC Support Backend            ║
-╠════════════════════════════════════════╣
-║  🚀 Server: http://localhost:${PORT}       ║
-║  📊 Dashboard: /api/dashboard/stats    ║
-║  👥 Leads: /api/leads                  ║
-╚════════════════════════════════════════╝
+╔═══════════════════════════════════════════╗
+║     PANYA - PLC Technical Support         ║
+╠═══════════════════════════════════════════╣
+║  🌐 Website: http://localhost:${PORT}          ║
+║  🔧 Admin:   http://localhost:${PORT}/admin    ║
+║  📊 API:     http://localhost:${PORT}/api      ║
+╚═══════════════════════════════════════════╝
       `);
     });
   } catch (error) {

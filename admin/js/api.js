@@ -5,7 +5,7 @@
 
 const API = {
   // Base URL - change for production
-  baseUrl: "http://localhost:3001/api",
+  baseUrl: "/api",
 
   /**
    * Get stored auth token
