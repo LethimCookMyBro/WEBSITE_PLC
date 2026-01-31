@@ -15,12 +15,15 @@ class ParticleCanvas {
     this.animationId = null;
     this.isRunning = false;
 
-    // Configuration
+    // Detect mobile for performance optimization
+    this.isMobile = window.innerWidth <= 768;
+
+    // Configuration - reduced for mobile
     this.config = {
-      particleCount: 60,
-      particleSize: { min: 1, max: 3 },
-      particleSpeed: 0.3,
-      connectionDistance: 120,
+      particleCount: this.isMobile ? 20 : 60,
+      particleSize: { min: 1, max: this.isMobile ? 2 : 3 },
+      particleSpeed: this.isMobile ? 0.2 : 0.3,
+      connectionDistance: this.isMobile ? 80 : 120,
       colors: {
         light: {
           particle: "rgba(59, 130, 246, 0.6)",
