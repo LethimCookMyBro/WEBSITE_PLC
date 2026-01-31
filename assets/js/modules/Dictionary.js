@@ -139,7 +139,7 @@ export const dictionary = {
     plan_starter_f4: "Community forum support",
     plan_cta_start: "Start Free Account",
 
-    // Plan 2: Plant Pro (Paid)
+    // Plan 2: Plan Pro (Paid)
     popular_badge: "Best Value",
     plan_pro_name: "Plan Pro",
     plan_pro_desc: "For plant maintenance teams requiring audit logs",
@@ -153,7 +153,7 @@ export const dictionary = {
     // Plan 3: Corporate Suite (Enterprise)
     plan_enterprise_name: "Enterprise",
     plan_enterprise_desc: "For multi-site organizations & security compliance",
-    plan_enterprise_f1: "Everything in Plant Pro",
+    plan_enterprise_f1: "Everything in Plan Pro",
     plan_enterprise_f2: "Private Cloud / On-Premise Deployment",
     plan_enterprise_f3: "Custom knowledge base indexing",
     plan_enterprise_f4: "SSO (Okta/AD) & Role-Based Access",
@@ -357,7 +357,7 @@ export const dictionary = {
 
     // Plan 2
     popular_badge: "คุ้มค่าที่สุด",
-    plan_pro_name: "Plant Pro",
+    plan_pro_name: "Plan Pro",
     plan_pro_desc: "สำหรับทีมบำรุงรักษาประจำโรงงานที่ต้องการบันทึก Audit Logs",
     plan_pro_f1: "ถามตอบไม่จำกัด",
     plan_pro_f2: "รองรับหลายแบรนด์ (Mitsubishi, Siemens, AB)",
@@ -369,7 +369,7 @@ export const dictionary = {
     // Plan 3
     plan_enterprise_name: "Corporate Suite",
     plan_enterprise_desc: "สำหรับองค์กรหลายสาขาที่เน้นความปลอดภัยข้อมูล",
-    plan_enterprise_f1: "ทุกฟีเจอร์ใน Plant Pro",
+    plan_enterprise_f1: "ทุกฟีเจอร์ใน Plan Pro",
     plan_enterprise_f2: "ติดตั้ง Private Cloud / On-Premise",
     plan_enterprise_f3: "ทำ Index ฐานความรู้เฉพาะองค์กร",
     plan_enterprise_f4: "SSO (Okta/AD) & กำหนดสิทธิ์รายคน",
