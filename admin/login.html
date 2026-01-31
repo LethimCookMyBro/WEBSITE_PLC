@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <title>Login - PANYA Admin</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin-main.css" />
+  </head>
+  <body class="login-page">
+    <div class="login-container">
+      <!-- Background Effects -->
+      <div class="login-bg">
+        <div class="login-bg__grid"></div>
+        <div class="login-bg__glow login-bg__glow--1"></div>
+        <div class="login-bg__glow login-bg__glow--2"></div>
+      </div>
+
+      <!-- Login Card -->
+      <div class="login-card">
+        <!-- Logo -->
+        <div class="login-card__header">
+          <div class="login-card__logo">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <h1 class="login-card__title">PANYA Admin</h1>
+          <p class="login-card__subtitle">Enterprise Dashboard</p>
+        </div>
+
+        <!-- Login Form -->
+        <form class="login-form" id="loginForm">
+          <div class="login-form__group">
+            <label class="login-form__label" for="email">
+              <i class="fas fa-envelope"></i>
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="login-form__input"
+              placeholder="admin@company.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="login-form__group">
+            <label class="login-form__label" for="password">
+              <i class="fas fa-lock"></i>
+              Password
+            </label>
+            <div class="login-form__password-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="login-form__input"
+                placeholder="••••••••"
+                required
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="login-form__toggle-password"
+                id="togglePassword"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="login-form__options">
+            <label class="login-form__remember">
+              <input type="checkbox" name="remember" id="remember" />
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="login-form__forgot">Forgot password?</a>
+          </div>
+
+          <!-- Error Message -->
+          <div class="login-form__error" id="loginError" style="display: none">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorMessage">Invalid credentials</span>
+          </div>
+
+          <button type="submit" class="login-form__submit" id="loginBtn">
+            <span class="login-form__submit-text">Sign In</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <!-- Demo Credentials -->
+        <div class="login-card__demo">
+          <p class="login-card__demo-title">
+            <i class="fas fa-info-circle"></i>
+            Demo Credentials
+          </p>
+          <div class="login-card__demo-creds">
+            <div class="login-card__demo-item">
+              <span class="login-card__demo-role">Admin</span>
+              <code>admin@panya.com</code>
+            </div>
+            <div class="login-card__demo-item">
+              <span class="login-card__demo-role">Engineer</span>
+              <code>engineer@panya.com</code>
+            </div>
+            <div class="login-card__demo-item">
+              <span class="login-card__demo-role">Viewer</span>
+              <code>viewer@panya.com</code>
+            </div>
+            <p class="login-card__demo-password">
+              Password: <code>demo123</code>
+            </p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="login-card__footer">
+          <p>&copy; 2026 PANYA. Enterprise RAG Support.</p>
+        </div>
+      </div>
+
+      <!-- Security Badge -->
+      <div class="login-security">
+        <i class="fas fa-shield-alt"></i>
+        <span>256-bit SSL Encrypted</span>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 /* ============================================
-   FAQ Section
+   FAQ Section - Mobile Optimized
    ============================================ */
 
 .l-faq {
@@ -23,17 +23,18 @@
   border-radius: var(--radius-lg);
   background: var(--glass-bg);
   border: 1px solid transparent;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Optimized: simpler transition, no shadow on hover */
+  transition: border-color 0.2s ease;
 }
 
 .l-faq__item:hover {
   border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
 }
 
 .l-faq__item--active {
   border-color: var(--blue-500);
-  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.15);
+  /* Static shadow, no transition */
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.12);
 }
 
 .l-faq__question {
@@ -48,7 +49,9 @@
   text-align: left;
   background: transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
+  border: none;
+  /* Optimized: only color transition */
+  transition: color 0.15s ease;
 }
 
 .l-faq__question:hover {
@@ -69,12 +72,10 @@
   color: var(--text-tertiary);
   background: var(--bg-secondary);
   border-radius: var(--radius-full);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.l-faq__item:hover .l-faq__icon {
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--blue-500);
+  /* Optimized: faster, simpler rotation */
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .l-faq__item--active .l-faq__icon {
@@ -83,14 +84,17 @@
   color: var(--white);
 }
 
+/* Answer - Use max-height instead of grid for better mobile performance */
 .l-faq__answer {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 0;
+  overflow: hidden;
+  /* Optimized: use max-height, which is more performant on mobile than grid-template-rows */
+  transition: max-height 0.25s ease-out;
 }
 
 .l-faq__item--active .l-faq__answer {
-  grid-template-rows: 1fr;
+  max-height: 500px;
+  transition: max-height 0.35s ease-in;
 }
 
 .l-faq__answer-inner {
@@ -102,5 +106,34 @@
   font-size: var(--text-base);
   color: var(--text-tertiary);
   line-height: 1.7;
-  animation: fadeInContent 0.4s ease-out;
+}
+
+/* Mobile specific - reduce animations */
+@media (max-width: 768px) {
+  .l-faq__item {
+    /* No hover effects on mobile */
+    transition: none;
+  }
+
+  .l-faq__item:hover {
+    border-color: transparent;
+  }
+
+  .l-faq__item--active {
+    border-color: var(--blue-500);
+  }
+
+  .l-faq__answer {
+    /* Faster transitions on mobile */
+    transition: max-height 0.2s ease-out;
+  }
+
+  .l-faq__item--active .l-faq__answer {
+    transition: max-height 0.25s ease-in;
+  }
+
+  .l-faq__icon {
+    /* Faster icon rotation on mobile */
+    transition: transform 0.15s ease;
+  }
 }

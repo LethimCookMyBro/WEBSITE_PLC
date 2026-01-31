@@ -1,5 +1,5 @@
 /* ============================================
-   Hero Section
+   Hero Section - Mobile Optimized
    ============================================ */
 
 .l-hero {
@@ -83,7 +83,8 @@
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
-  animation: heroSlideUp 0.8s ease-out 0.2s both;
+  opacity: 0;
+  animation: heroSlideUp 0.6s ease-out 0.2s forwards;
 }
 
 .l-hero__badge {
@@ -114,7 +115,8 @@
   line-height: 1.15;
   margin-bottom: var(--space-6);
   letter-spacing: -0.02em;
-  animation: heroSlideUp 0.8s ease-out 0.4s both;
+  opacity: 0;
+  animation: heroSlideUp 0.6s ease-out 0.3s forwards;
 }
 
 .l-hero__subtitle {
@@ -122,18 +124,20 @@
   color: var(--text-tertiary);
   line-height: 1.7;
   margin-bottom: var(--space-8);
-  animation: heroSlideUp 0.8s ease-out 0.6s both;
+  opacity: 0;
+  animation: heroSlideUp 0.6s ease-out 0.4s forwards;
 }
 
 .l-hero__ctas {
   display: flex;
   gap: var(--space-4);
   flex-wrap: wrap;
-  animation: heroSlideUp 0.8s ease-out 0.8s both;
+  opacity: 0;
+  animation: heroSlideUp 0.6s ease-out 0.5s forwards;
 }
 
 .l-hero__ctas .c-btn i {
-  transition: transform var(--transition-fast);
+  transition: transform 0.2s ease;
 }
 
 .l-hero__ctas .c-btn:hover i {
@@ -146,7 +150,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: heroFadeIn 1s ease-out 0.5s both;
+  opacity: 0;
+  animation: heroFadeIn 0.8s ease-out 0.4s forwards;
 }
 
 .l-hero__card {
@@ -242,7 +247,7 @@
   color: var(--blue-400);
 }
 
-/* Floating Elements */
+/* Floating Elements - Optimized for mobile */
 .l-hero__float {
   position: absolute;
   width: 48px;
@@ -251,13 +256,13 @@
   align-items: center;
   justify-content: center;
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   color: var(--blue-500);
   font-size: var(--text-xl);
-  box-shadow: var(--glass-shadow);
-  animation: float 4s ease-in-out infinite;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* Optimized: use transform instead of position for animation */
+  animation: floatSimple 3s ease-in-out infinite;
 }
 
 .l-hero__float--1 {
@@ -276,7 +281,7 @@
   animation-delay: 2s;
 }
 
-/* Hero Card Tech Border */
+/* Hero Card - Static gradient border (no animation) */
 .l-hero__card.c-glass-card {
   position: relative;
 }
@@ -288,16 +293,13 @@
   border-radius: calc(var(--radius-xl) + 2px);
   background: linear-gradient(
     135deg,
-    var(--blue-500) 0%,
-    var(--blue-600) 25%,
-    #8b5cf6 50%,
-    var(--blue-500) 75%,
-    var(--blue-600) 100%
+    var(--blue-500),
+    var(--blue-600),
+    #8b5cf6
   );
-  background-size: 300% 300%;
-  animation: gradientBorder 6s ease infinite;
   z-index: -1;
   opacity: 0.5;
+  /* Removed: animation: gradientBorder - too heavy on mobile */
 }
 
 .l-hero__card.c-glass-card:hover::before {
@@ -339,5 +341,78 @@
   50% {
     transform: translateY(8px);
     opacity: 0.5;
+  }
+}
+
+@keyframes heroSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Simpler float animation */
+@keyframes floatSimple {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .l-hero__container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .l-hero__content {
+    max-width: 100%;
+  }
+  .l-hero__ctas {
+    justify-content: center;
+  }
+  .l-hero__title {
+    font-size: var(--text-3xl);
+  }
+
+  /* Disable floating elements on mobile - too heavy */
+  .l-hero__float {
+    display: none;
+  }
+
+  /* Disable hero animations on mobile */
+  .l-hero__badges,
+  .l-hero__title,
+  .l-hero__subtitle,
+  .l-hero__ctas,
+  .l-hero__visual {
+    animation: none;
+    opacity: 1;
+  }
+
+  /* Disable gradient border animation */
+  .l-hero__card.c-glass-card::before {
+    display: none;
+  }
+
+  .l-hero__scroll {
+    display: none;
   }
 }

@@ -1,0 +1,271 @@
+/* ============================================
+   Admin Forms
+   ============================================ */
+
+/* Form Group */
+.admin-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.admin-form__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.admin-form__label i {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.admin-form__required {
+  color: var(--red-400);
+}
+
+/* Inputs */
+.admin-form__input,
+.admin-form__textarea,
+.admin-form__select {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  transition: all var(--transition-fast);
+}
+
+.admin-form__input::placeholder,
+.admin-form__textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.admin-form__input:focus,
+.admin-form__textarea:focus,
+.admin-form__select:focus {
+  outline: none;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.admin-form__input--error,
+.admin-form__textarea--error,
+.admin-form__select--error {
+  border-color: var(--red-500);
+}
+
+.admin-form__input--error:focus,
+.admin-form__textarea--error:focus,
+.admin-form__select--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.admin-form__textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.admin-form__select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Help Text & Error */
+.admin-form__help {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.admin-form__error {
+  font-size: var(--text-xs);
+  color: var(--red-400);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Checkbox & Radio */
+.admin-form__checkbox,
+.admin-form__radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.admin-form__checkbox input,
+.admin-form__radio input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue-500);
+  cursor: pointer;
+}
+
+/* Toggle Switch */
+.admin-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.admin-toggle__switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast);
+}
+
+.admin-toggle__switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: var(--text-tertiary);
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.admin-toggle input {
+  display: none;
+}
+
+.admin-toggle input:checked + .admin-toggle__switch {
+  background: var(--blue-500);
+}
+
+.admin-toggle input:checked + .admin-toggle__switch::after {
+  left: 22px;
+  background: white;
+}
+
+.admin-toggle__label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* File Upload */
+.admin-form__file {
+  position: relative;
+  border: 2px dashed var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  text-align: center;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.admin-form__file:hover {
+  border-color: var(--blue-500);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.admin-form__file-icon {
+  font-size: var(--text-3xl);
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.admin-form__file-text {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.admin-form__file-text strong {
+  color: var(--blue-400);
+}
+
+.admin-form__file input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Buttons */
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.admin-btn--primary {
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+  color: white;
+}
+
+.admin-btn--primary:hover {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.admin-btn--secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+}
+
+.admin-btn--secondary:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.admin-btn--danger {
+  background: var(--red-500);
+  color: white;
+}
+
+.admin-btn--danger:hover {
+  background: var(--red-400);
+}
+
+.admin-btn--ghost {
+  background: transparent;
+  color: var(--text-tertiary);
+}
+
+.admin-btn--ghost:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.admin-btn--sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.admin-btn--lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-base);
+}
+
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

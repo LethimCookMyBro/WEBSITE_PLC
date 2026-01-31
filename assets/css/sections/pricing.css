@@ -1,5 +1,5 @@
 /* ============================================
-   Pricing Section
+   Pricing Section - Mobile Optimized
    ============================================ */
 
 .l-pricing {
@@ -16,14 +16,15 @@
 .l-pricing__card {
   padding: var(--space-10) var(--space-8);
   position: relative;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Optimized: simpler transition */
+  transition: transform 0.2s ease;
 }
 
 .l-pricing__card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-4px);
 }
 
-/* Premium Popular Card with Gradient Border */
+/* Premium Popular Card - Static gradient border */
 .l-pricing__card--popular {
   position: relative;
   border: none;
@@ -34,7 +35,6 @@
   margin-top: -10px;
 }
 
-/* Disable the default glass sheen on the popular card */
 .l-pricing__card--popular.c-glass-card::after {
   display: none;
 }
@@ -44,15 +44,13 @@
   position: absolute;
   inset: -2px;
   border-radius: calc(var(--radius-xl) + 2px);
+  /* Static gradient - no animation */
   background: linear-gradient(
     135deg,
     var(--blue-500),
     var(--blue-600),
-    #8b5cf6,
-    var(--blue-500)
+    #8b5cf6
   );
-  background-size: 300% 300%;
-  animation: gradientBorder 4s ease infinite;
   z-index: -1;
 }
 
@@ -66,10 +64,10 @@
 }
 
 .l-pricing__card--popular:hover {
-  transform: scale(1.05) translateY(-8px);
+  transform: scale(1.05) translateY(-4px);
 }
 
-/* Animated Popular Badge */
+/* Popular Badge - Simpler animation */
 .l-pricing__badge {
   position: absolute;
   top: -12px;
@@ -83,8 +81,8 @@
   color: var(--white);
   background: linear-gradient(135deg, var(--blue-600) 0%, #8b5cf6 100%);
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-  animation: badgePulse 2s ease-in-out infinite;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  /* Removed heavy pulse animation */
 }
 
 .l-pricing__header {
@@ -173,20 +171,53 @@
   padding: var(--space-2) 0;
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  transition: all 0.2s ease;
-}
-
-.l-pricing__features li:hover {
-  color: var(--text-primary);
-  padding-left: var(--space-2);
+  /* Removed transition on mobile */
 }
 
 .l-pricing__features li i {
   color: var(--success);
   font-size: var(--text-xs);
-  transition: transform 0.2s ease;
 }
 
-.l-pricing__features li:hover i {
-  transform: scale(1.2);
+/* Desktop only hover effects */
+@media (min-width: 769px) {
+  .l-pricing__features li {
+    transition: all 0.15s ease;
+  }
+
+  .l-pricing__features li:hover {
+    color: var(--text-primary);
+    padding-left: var(--space-2);
+  }
+
+  .l-pricing__features li i {
+    transition: transform 0.15s ease;
+  }
+
+  .l-pricing__features li:hover i {
+    transform: scale(1.2);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .l-pricing__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .l-pricing__card--popular {
+    transform: none;
+    margin-top: 0;
+  }
+
+  .l-pricing__card:hover,
+  .l-pricing__card--popular:hover {
+    transform: none;
+  }
+
+  /* Remove gradient border on mobile */
+  .l-pricing__card--popular::before {
+    background: var(--blue-500);
+  }
 }
