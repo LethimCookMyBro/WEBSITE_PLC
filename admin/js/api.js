@@ -224,6 +224,40 @@ const API = {
     return this.request("/audit/stats");
   },
 
+  // ==================== LEADS ====================
+
+  /**
+   * Get all leads
+   */
+  async getLeads(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(`/leads${query ? `?${query}` : ""}`);
+  },
+
+  /**
+   * Get single lead
+   */
+  async getLead(id) {
+    return this.request(`/leads/${id}`);
+  },
+
+  /**
+   * Update lead status
+   */
+  async updateLead(id, data) {
+    return this.request(`/leads/${id}`, {
+      method: "PUT",
+      body: data,
+    });
+  },
+
+  /**
+   * Delete lead
+   */
+  async deleteLead(id) {
+    return this.request(`/leads/${id}`, { method: "DELETE" });
+  },
+
   // ==================== KNOWLEDGE BASE ====================
 
   /**

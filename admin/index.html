@@ -559,13 +559,16 @@
           >
           <a class="sidebar__link"
             ><i class="fas fa-user-plus"></i><span>ลูกค้าใหม่</span
-            ><span class="sidebar__badge" id="leadsBadge">3</span></a
+            ><span class="sidebar__badge" id="leadsBadge">0</span></a
           >
           <a class="sidebar__link"
-            ><i class="fas fa-headset"></i><span>Tickets</span></a
+            ><i class="fas fa-server"></i><span>Server Logs</span></a
           >
           <a class="sidebar__link"
-            ><i class="fas fa-book"></i><span>Knowledge Base</span></a
+            ><i class="fas fa-history"></i><span>Audit Logs</span></a
+          >
+          <a class="sidebar__link"
+            ><i class="fas fa-shield-alt"></i><span>Security Logs</span></a
           >
           <a class="sidebar__link"
             ><i class="fas fa-cog"></i><span>ตั้งค่า</span></a
@@ -590,8 +593,8 @@
       <main class="main">
         <header class="main__header">
           <div>
-            <h1 class="main__title">Dashboard</h1>
-            <p class="main__subtitle">ระบบจัดการ PLC Technical Support</p>
+            <h1 class="main__title">Sales Dashboard</h1>
+            <p class="main__subtitle">ระบบจัดการลูกค้าและติดตามยอดขาย</p>
           </div>
           <button class="main__refresh" onclick="location.reload()">
             <i class="fas fa-sync-alt"></i> รีเฟรช
@@ -602,65 +605,41 @@
         <section class="stats">
           <div class="stat-card">
             <div class="stat-card__icon stat-card__icon--blue">
-              <i class="fas fa-comments"></i>
+              <i class="fas fa-users"></i>
             </div>
             <div class="stat-card__content">
-              <p class="stat-card__label">คำถามวันนี้</p>
-              <p class="stat-card__value">247</p>
+              <p class="stat-card__label">ลูกค้าทั้งหมด</p>
+              <p class="stat-card__value" id="statTotalLeads">0</p>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-card__icon stat-card__icon--green">
-              <i class="fas fa-check-circle"></i>
+              <i class="fas fa-user-plus"></i>
             </div>
             <div class="stat-card__content">
-              <p class="stat-card__label">AI แก้ปัญหาได้</p>
-              <p class="stat-card__value">94%</p>
+              <p class="stat-card__label">ลูกค้าใหม่วันนี้</p>
+              <p class="stat-card__value" id="statNewToday">0</p>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-card__icon stat-card__icon--yellow">
-              <i class="fas fa-user-plus"></i>
+              <i class="fas fa-clock"></i>
             </div>
             <div class="stat-card__content">
-              <p class="stat-card__label">ลูกค้าใหม่</p>
-              <p class="stat-card__value">12</p>
+              <p class="stat-card__label">รอติดต่อกลับ</p>
+              <p class="stat-card__value" id="statPending">0</p>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-card__icon stat-card__icon--purple">
-              <i class="fas fa-clock"></i>
+              <i class="fas fa-phone-alt"></i>
             </div>
             <div class="stat-card__content">
-              <p class="stat-card__label">เวลาตอบเฉลี่ย</p>
-              <p class="stat-card__value">1.2s</p>
+              <p class="stat-card__label">ติดต่อแล้ว</p>
+              <p class="stat-card__value" id="statContacted">0</p>
             </div>
           </div>
         </section>
-
-        <!-- Charts -->
-        <div class="charts-row">
-          <div class="card">
-            <div class="card__header">
-              <h2 class="card__title">
-                <i class="fas fa-chart-area"></i> แนวโน้มคำถามรายวัน
-              </h2>
-            </div>
-            <div class="chart-container">
-              <canvas id="questionsChart"></canvas>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card__header">
-              <h2 class="card__title">
-                <i class="fas fa-chart-pie"></i> หมวดหมู่ปัญหา
-              </h2>
-            </div>
-            <div class="chart-container">
-              <canvas id="categoriesChart"></canvas>
-            </div>
-          </div>
-        </div>
 
         <!-- Sections -->
         <div class="sections">
@@ -670,31 +649,41 @@
               <h2 class="card__title">
                 <i class="fas fa-user-plus"></i> ลูกค้าที่สนใจ
               </h2>
-              <button class="card__action" onclick="alert('Export CSV...')">
+              <button class="card__action" onclick="exportLeads()">
                 <i class="fas fa-download"></i> Export
               </button>
             </div>
             <div class="card__body" id="leadsList"></div>
           </section>
 
-          <!-- Tickets -->
+          <!-- Audit Logs -->
           <section class="card">
             <div class="card__header">
               <h2 class="card__title">
-                <i class="fas fa-headset"></i> Tickets ล่าสุด
+                <i class="fas fa-history"></i> Audit Logs
               </h2>
             </div>
-            <div class="card__body" id="ticketsList"></div>
+            <div class="card__body" id="auditLogsList"></div>
           </section>
 
-          <!-- Top Issues -->
-          <section class="card full-width">
+          <!-- Server Logs -->
+          <section class="card">
             <div class="card__header">
               <h2 class="card__title">
-                <i class="fas fa-exclamation-triangle"></i> ปัญหา PLC ที่พบบ่อย
+                <i class="fas fa-server"></i> Server Logs
               </h2>
             </div>
-            <div class="card__body" id="issuesList"></div>
+            <div class="card__body" id="serverLogsList"></div>
+          </section>
+
+          <!-- Security Logs -->
+          <section class="card">
+            <div class="card__header">
+              <h2 class="card__title">
+                <i class="fas fa-shield-alt"></i> Security Logs
+              </h2>
+            </div>
+            <div class="card__body" id="securityLogsList"></div>
           </section>
         </div>
       </main>
@@ -725,161 +714,279 @@
       </div>
     </div>
 
+    <script src="js/api.js"></script>
     <script>
-      // Demo Data
-      const leads = [
-        {
-          name: "สมชาย ใจดี",
-          company: "บริษัท ไทยออโต้ จำกัด",
-          position: "วิศวกรบำรุงรักษา",
-          email: "somchai@auto.co.th",
-          phone: "081-234-5678",
-          message: "สนใจระบบ PANYA สำหรับ PLC Mitsubishi FX5U",
-          time: "10 นาทีที่แล้ว",
-        },
-        {
-          name: "นงลักษณ์ วงษ์สุข",
-          company: "โรงงานผลิตชิ้นส่วน ABC",
-          position: "ผู้จัดการโรงงาน",
-          email: "nonglak@abc.co.th",
-          phone: "089-876-5432",
-          message: "ต้องการลดเวลา downtime จากการแก้ปัญหา PLC",
-          time: "1 ชั่วโมงที่แล้ว",
-        },
-        {
-          name: "วิชัย เจริญผล",
-          company: "XYZ Manufacturing",
-          position: "Maintenance Engineer",
-          email: "wichai@xyz.com",
-          phone: "062-333-4444",
-          message: "ขอใบเสนอราคาแพ็คเกจ Enterprise",
-          time: "2 ชั่วโมงที่แล้ว",
-        },
-      ];
+      // Global leads data (fetched from API)
+      let leads = [];
 
-      const tickets = [
-        {
-          title: "FX5U ไม่สามารถเชื่อมต่อ Ethernet",
-          customer: "บริษัท ซุปเปอร์แมช",
-          status: "pending",
-          time: "15 นาทีที่แล้ว",
-        },
-        {
-          title: "Q03UDE ค้างที่ RUN mode",
-          customer: "โรงงานอาหาร เฟรชฟู้ด",
-          status: "resolved",
-          time: "30 นาทีที่แล้ว",
-        },
-        {
-          title: "Error Code 3205 บน GT2710",
-          customer: "บริษัท ไทยพลาสติก",
-          status: "pending",
-          time: "1.5 ชั่วโมงที่แล้ว",
-        },
-      ];
+      // Render leads list
+      function renderLeads() {
+        const container = document.getElementById("leadsList");
+        if (leads.length === 0) {
+          container.innerHTML = `
+            <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+              <i class="fas fa-inbox" style="font-size: 40px; margin-bottom: 12px; display: block;"></i>
+              ยังไม่มีลูกค้าที่สนใจ
+            </div>
+          `;
+          return;
+        }
 
-      const issues = [
-        {
-          rank: 1,
-          title: "Communication Timeout Error",
-          brand: "Mitsubishi FX5U",
-          count: 142,
-          trend: "+12%",
-        },
-        {
-          rank: 2,
-          title: "Memory Overflow",
-          brand: "Mitsubishi Q Series",
-          count: 98,
-          trend: "+5%",
-        },
-        {
-          rank: 3,
-          title: "I/O Configuration Error",
-          brand: "Siemens S7-1200",
-          count: 67,
-          trend: "-3%",
-        },
-        {
-          rank: 4,
-          title: "Parameter Access Failure",
-          brand: "Omron CP1H",
-          count: 45,
-          trend: "+8%",
-        },
-        {
-          rank: 5,
-          title: "Network Disconnection",
-          brand: "Allen Bradley",
-          count: 32,
-          trend: "-1%",
-        },
-      ];
+        container.innerHTML = leads
+          .map((l, i) => {
+            const time = l.created_at ? formatTime(l.created_at) : "ไม่ทราบ";
+            const status = l.status || "new";
+            return `
+          <div class="list-item" onclick="showLead(${i})">
+            <div class="list-item__avatar">${l.name ? l.name.charAt(0) : "?"}</div>
+            <div class="list-item__content">
+              <p class="list-item__title">${l.name || "ไม่ระบุชื่อ"} — ${l.company || "ไม่ระบุบริษัท"}</p>
+              <p class="list-item__subtitle">${l.message || "ไม่มีข้อความ"}</p>
+            </div>
+            <div>
+              <span class="badge badge--${status === "new" ? "new" : status === "contacted" ? "pending" : "resolved"}">
+                ${status === "new" ? "ใหม่" : status === "contacted" ? "ติดต่อแล้ว" : "เสร็จสิ้น"}
+              </span>
+              <p class="list-item__time">${time}</p>
+            </div>
+          </div>
+        `;
+          })
+          .join("");
+      }
 
-      // Render Leads
-      document.getElementById("leadsList").innerHTML = leads
-        .map(
-          (l, i) => `
-      <div class="list-item" onclick="showLead(${i})">
-        <div class="list-item__avatar">${l.name.charAt(0)}</div>
-        <div class="list-item__content">
-          <p class="list-item__title">${l.name} — ${l.company}</p>
-          <p class="list-item__subtitle">${l.message}</p>
-        </div>
-        <div>
-          <span class="badge badge--new">ใหม่</span>
-          <p class="list-item__time">${l.time}</p>
-        </div>
-      </div>
-    `,
-        )
-        .join("");
+      // Format time relative
+      function formatTime(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000 / 60); // minutes
 
-      // Render Tickets
-      document.getElementById("ticketsList").innerHTML = tickets
-        .map(
-          (t) => `
-      <div class="list-item" onclick="alert('เปิด Ticket: ${t.title}')">
-        <div class="list-item__avatar"><i class="fas fa-ticket-alt"></i></div>
-        <div class="list-item__content">
-          <p class="list-item__title">${t.title}</p>
-          <p class="list-item__subtitle">${t.customer}</p>
-        </div>
-        <div>
-          <span class="badge badge--${t.status}">${t.status === "pending" ? "รอดำเนินการ" : "แก้ไขแล้ว"}</span>
-          <p class="list-item__time">${t.time}</p>
-        </div>
-      </div>
-    `,
-        )
-        .join("");
+        if (diff < 1) return "เมื่อกี้";
+        if (diff < 60) return `${diff} นาทีที่แล้ว`;
+        if (diff < 1440) return `${Math.floor(diff / 60)} ชั่วโมงที่แล้ว`;
+        return `${Math.floor(diff / 1440)} วันที่แล้ว`;
+      }
 
-      // Render Issues
-      document.getElementById("issuesList").innerHTML = issues
-        .map(
-          (is) => `
-      <div class="issue-item">
-        <div class="issue-item__rank ${is.rank <= 3 ? "issue-item__rank--" + is.rank : ""}">#${is.rank}</div>
-        <div class="issue-item__title">${is.title}</div>
-        <p class="issue-item__brand">${is.brand}</p>
-        <p class="issue-item__count">${is.count} ครั้ง</p>
-        <span class="badge ${is.trend.startsWith("+") ? "badge--pending" : "badge--resolved"}">${is.trend}</span>
-      </div>
-    `,
-        )
-        .join("");
+      // Update stats from leads data
+      function updateStats() {
+        const total = leads.length;
+        const today = new Date().toISOString().split("T")[0];
+        const newToday = leads.filter(
+          (l) => l.created_at && l.created_at.startsWith(today),
+        ).length;
+        const pending = leads.filter(
+          (l) => l.status === "new" || !l.status,
+        ).length;
+        const contacted = leads.filter((l) => l.status === "contacted").length;
 
+        document.getElementById("statTotalLeads").textContent = total;
+        document.getElementById("statNewToday").textContent = newToday;
+        document.getElementById("statPending").textContent = pending;
+        document.getElementById("statContacted").textContent = contacted;
+      }
+
+      // Load and update all data
+      async function loadLeads() {
+        try {
+          const result = await API.getLeads({ limit: 50 });
+          leads = result.leads || [];
+          renderLeads();
+          updateStats();
+          document.getElementById("leadsBadge").textContent = leads.filter(
+            (l) => l.status === "new" || !l.status,
+          ).length;
+        } catch (error) {
+          console.error("Failed to load leads:", error);
+          leads = [];
+          renderLeads();
+        }
+      }
+
+      // Load Audit Logs
+      async function loadAuditLogs() {
+        const container = document.getElementById("auditLogsList");
+        try {
+          const result = await API.getAuditLogs({ limit: 10 });
+          const logs = result.logs || [];
+          if (logs.length === 0) {
+            container.innerHTML = renderEmptyState(
+              "fa-history",
+              "ไม่มี Audit Logs",
+            );
+            return;
+          }
+          container.innerHTML = logs
+            .map(
+              (log) => `
+            <div class="list-item">
+              <div class="list-item__avatar"><i class="fas fa-user-cog"></i></div>
+              <div class="list-item__content">
+                <p class="list-item__title">${log.action || log.type || "Activity"}</p>
+                <p class="list-item__subtitle">${log.user || "System"} - ${log.details || ""}</p>
+              </div>
+              <p class="list-item__time">${formatTime(log.created_at)}</p>
+            </div>
+          `,
+            )
+            .join("");
+        } catch (error) {
+          container.innerHTML = renderEmptyState(
+            "fa-history",
+            "ไม่มี Audit Logs",
+          );
+        }
+      }
+
+      // Load Security Logs
+      async function loadSecurityLogs() {
+        const container = document.getElementById("securityLogsList");
+        try {
+          const result = await API.getSecurityLogs({ limit: 10 });
+          const logs = result.logs || [];
+          if (logs.length === 0) {
+            container.innerHTML = renderEmptyState(
+              "fa-shield-alt",
+              "ไม่มี Security Logs",
+            );
+            return;
+          }
+          container.innerHTML = logs
+            .map(
+              (log) => `
+            <div class="list-item">
+              <div class="list-item__avatar" style="background: ${log.success ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"}; color: ${log.success ? "#22c55e" : "#ef4444"}">
+                <i class="fas ${log.success ? "fa-check" : "fa-times"}"></i>
+              </div>
+              <div class="list-item__content">
+                <p class="list-item__title">${log.action || "Login Attempt"}</p>
+                <p class="list-item__subtitle">IP: ${log.ip || "Unknown"} - ${log.user || "Unknown User"}</p>
+              </div>
+              <p class="list-item__time">${formatTime(log.created_at)}</p>
+            </div>
+          `,
+            )
+            .join("");
+        } catch (error) {
+          container.innerHTML = renderEmptyState(
+            "fa-shield-alt",
+            "ไม่มี Security Logs",
+          );
+        }
+      }
+
+      // Load Server Logs (simulated - no backend endpoint yet)
+      function loadServerLogs() {
+        const container = document.getElementById("serverLogsList");
+        const logs = [
+          {
+            type: "info",
+            message: "Server started on port 3000",
+            time: new Date(Date.now() - 3600000).toISOString(),
+          },
+          {
+            type: "info",
+            message: "Database connected successfully",
+            time: new Date(Date.now() - 3500000).toISOString(),
+          },
+          {
+            type: "success",
+            message: "API routes initialized",
+            time: new Date(Date.now() - 3400000).toISOString(),
+          },
+        ];
+
+        container.innerHTML = logs
+          .map((log) => {
+            const iconColor =
+              log.type === "error"
+                ? "#ef4444"
+                : log.type === "warning"
+                  ? "#f59e0b"
+                  : "#22c55e";
+            const icon =
+              log.type === "error"
+                ? "fa-times-circle"
+                : log.type === "warning"
+                  ? "fa-exclamation-circle"
+                  : "fa-check-circle";
+            return `
+            <div class="list-item">
+              <div class="list-item__avatar" style="background: ${iconColor}20; color: ${iconColor}">
+                <i class="fas ${icon}"></i>
+              </div>
+              <div class="list-item__content">
+                <p class="list-item__title">${log.message}</p>
+                <p class="list-item__subtitle">[${log.type.toUpperCase()}]</p>
+              </div>
+              <p class="list-item__time">${formatTime(log.time)}</p>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      // Render empty state
+      function renderEmptyState(icon, message) {
+        return `
+          <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+            <i class="fas ${icon}" style="font-size: 40px; margin-bottom: 12px; display: block;"></i>
+            ${message}
+          </div>
+        `;
+      }
+
+      // Export leads to CSV
+      function exportLeads() {
+        if (leads.length === 0) {
+          alert("ไม่มีข้อมูลลูกค้าให้ Export");
+          return;
+        }
+
+        const headers = [
+          "ชื่อ",
+          "ตำแหน่ง",
+          "บริษัท",
+          "อีเมล",
+          "โทร",
+          "ข้อความ",
+          "สถานะ",
+          "วันที่",
+        ];
+        const rows = leads.map((l) => [
+          l.name || "",
+          l.position || "",
+          l.company || "",
+          l.email || "",
+          l.phone || "",
+          (l.message || "").replace(/,/g, ";"),
+          l.status || "new",
+          l.created_at || "",
+        ]);
+
+        const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join(
+          "\n",
+        );
+        const blob = new Blob(["\uFEFF" + csv], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `leads_${new Date().toISOString().split("T")[0]}.csv`;
+        link.click();
+      }
       // Show Lead Detail
       function showLead(i) {
         const l = leads[i];
+        if (!l) return;
+
         document.getElementById("leadDetail").innerHTML = `
         <div class="lead-detail">
-          <div class="lead-detail__row"><span class="lead-detail__label">ชื่อ:</span><span class="lead-detail__value">${l.name}</span></div>
-          <div class="lead-detail__row"><span class="lead-detail__label">ตำแหน่ง:</span><span class="lead-detail__value">${l.position}</span></div>
-          <div class="lead-detail__row"><span class="lead-detail__label">บริษัท:</span><span class="lead-detail__value">${l.company}</span></div>
-          <div class="lead-detail__row"><span class="lead-detail__label">อีเมล:</span><span class="lead-detail__value">${l.email}</span></div>
-          <div class="lead-detail__row"><span class="lead-detail__label">โทร:</span><span class="lead-detail__value">${l.phone}</span></div>
-          <div class="lead-detail__message">${l.message}</div>
+          <div class="lead-detail__row"><span class="lead-detail__label">ชื่อ:</span><span class="lead-detail__value">${l.name || "-"}</span></div>
+          <div class="lead-detail__row"><span class="lead-detail__label">ตำแหน่ง:</span><span class="lead-detail__value">${l.position || "-"}</span></div>
+          <div class="lead-detail__row"><span class="lead-detail__label">บริษัท:</span><span class="lead-detail__value">${l.company || "-"}</span></div>
+          <div class="lead-detail__row"><span class="lead-detail__label">อีเมล:</span><span class="lead-detail__value">${l.email || "-"}</span></div>
+          <div class="lead-detail__row"><span class="lead-detail__label">โทร:</span><span class="lead-detail__value">${l.phone || "-"}</span></div>
+          <div class="lead-detail__message">${l.message || "ไม่มีข้อความ"}</div>
         </div>
       `;
         document.getElementById("leadModal").classList.add("modal--open");
@@ -889,88 +996,11 @@
         document.getElementById("leadModal").classList.remove("modal--open");
       }
 
-      // Charts
-      new Chart(document.getElementById("questionsChart"), {
-        type: "line",
-        data: {
-          labels: [
-            "จันทร์",
-            "อังคาร",
-            "พุธ",
-            "พฤหัส",
-            "ศุกร์",
-            "เสาร์",
-            "อาทิตย์",
-          ],
-          datasets: [
-            {
-              label: "คำถามทั้งหมด",
-              data: [45, 62, 58, 71, 56, 32, 28],
-              borderColor: "#3b82f6",
-              backgroundColor: "rgba(59,130,246,0.1)",
-              fill: true,
-              tension: 0.4,
-            },
-            {
-              label: "AI แก้ได้",
-              data: [42, 58, 54, 68, 52, 30, 26],
-              borderColor: "#22c55e",
-              backgroundColor: "rgba(34,197,94,0.1)",
-              fill: true,
-              tension: 0.4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: "bottom", labels: { color: "#94a3b8" } },
-          },
-          scales: {
-            x: {
-              grid: { color: "rgba(255,255,255,0.05)" },
-              ticks: { color: "#94a3b8" },
-            },
-            y: {
-              grid: { color: "rgba(255,255,255,0.05)" },
-              ticks: { color: "#94a3b8" },
-              beginAtZero: true,
-            },
-          },
-        },
-      });
-
-      new Chart(document.getElementById("categoriesChart"), {
-        type: "doughnut",
-        data: {
-          labels: ["Communication", "Memory", "I/O", "Network", "อื่นๆ"],
-          datasets: [
-            {
-              data: [35, 25, 20, 12, 8],
-              backgroundColor: [
-                "#3b82f6",
-                "#22c55e",
-                "#f59e0b",
-                "#8b5cf6",
-                "#64748b",
-              ],
-              borderWidth: 0,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: "65%",
-          plugins: {
-            legend: {
-              position: "right",
-              labels: { color: "#94a3b8", font: { size: 11 } },
-            },
-          },
-        },
-      });
+      // Load all data on page load
+      loadLeads();
+      loadAuditLogs();
+      loadSecurityLogs();
+      loadServerLogs();
     </script>
   </body>
 </html>

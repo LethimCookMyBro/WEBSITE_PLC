@@ -4,27 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Security Headers -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="
-      default-src 'self';
-      script-src 'self' 'unsafe-inline';
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-      font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
-      img-src 'self' data: https:;
-      connect-src 'self';
-      frame-ancestors 'none';
-    "
-    />
-    <meta
-      http-equiv="Permissions-Policy"
-      content="camera=(), microphone=(), geolocation=(), payment=()"
-    />
+    <!-- SEO & Accessibility -->
 
     <title>
       PANYA - Intelligent RAG-Based Technical Support for PLC Systems
@@ -55,6 +35,34 @@
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body>
+    <!-- Loading Indicator -->
+    <div
+      id="loading-screen"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0a0a0f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        color: white;
+        font-family: sans-serif;
+      "
+    >
+      <div style="text-align: center">
+        <div style="font-size: 2rem; margin-bottom: 1rem">
+          🔄 Loading PANYA...
+        </div>
+        <div style="font-size: 0.9rem; opacity: 0.7">
+          If this takes too long, check browser console (F12)
+        </div>
+      </div>
+    </div>
+
     <!-- Component Containers -->
     <div id="navbar-container"></div>
     <div id="hero-container"></div>

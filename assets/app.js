@@ -54,11 +54,59 @@ function bindEvents() {
     question?.addEventListener("click", () => UI.toggleFaq(item));
   });
 
-  // Contact form
-  UI.elements.contactForm?.addEventListener("submit", (e) => {
+  // Contact form - Submit to API
+  UI.elements.contactForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (FormValidator.validateForm(e.target)) {
+
+    if (!FormValidator.validateForm(e.target)) {
+      return;
+    }
+
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+
+    try {
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> กำลังส่ง...';
+
+      // Get form data
+      const formData = {
+        name: form.name.value.trim(),
+        position: form.job_title.value.trim(),
+        company: form.company.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        message: form.message.value.trim(),
+      };
+
+      // Send to API
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "ไม่สามารถส่งข้อมูลได้");
+      }
+
+      // Show success
       UI.showFormSuccess();
+      console.log("✅ Lead submitted:", result);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("เกิดข้อผิดพลาด: " + error.message);
+    } finally {
+      // Restore button
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
     }
   });
 
@@ -114,6 +162,14 @@ function init() {
 
   // Bind events
   bindEvents();
+
+  // Hide loading screen
+  const loadingScreen = document.getElementById("loading-screen");
+  if (loadingScreen) {
+    loadingScreen.style.opacity = "0";
+    loadingScreen.style.transition = "opacity 0.5s ease-out";
+    setTimeout(() => loadingScreen.remove(), 500);
+  }
 
   console.log("✅ PANYA initialized (Modular)", {
     language: AppState.currentLang,

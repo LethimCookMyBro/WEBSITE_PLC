@@ -402,14 +402,21 @@
    ============================================ */
 @media (max-width: 768px) {
   /* Disable expensive animations on mobile for performance */
+  /* Decorative elements can be hidden */
   .c-cyber-grid::before,
-  .c-holo-shimmer,
   .c-matrix-bg,
   .c-scan-line,
-  .c-data-stream,
-  .c-circuit-glow {
+  .c-data-stream {
     display: none !important;
     animation: none !important;
+  }
+
+  /* Content wrappers - DO NOT HIDE, just disable animation */
+  .c-holo-shimmer,
+  .c-circuit-glow {
+    animation: none !important;
+    background-size: cover !important; /* Reset specific animation props if needed */
+    box-shadow: none !important;
   }
 
   /* Disable backdrop-filter on mobile - very expensive on mobile GPUs */

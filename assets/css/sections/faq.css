@@ -111,6 +111,10 @@
 /* Mobile specific - reduce animations */
 @media (max-width: 768px) {
   .l-faq__item {
+    /* Pure white, no glass effects on mobile */
+    background: var(--bg-secondary);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     /* No hover effects on mobile */
     transition: none;
   }
@@ -125,15 +129,20 @@
 
   .l-faq__answer {
     /* Faster transitions on mobile */
-    transition: max-height 0.2s ease-out;
+    transition: max-height 0.15s ease-out;
   }
 
   .l-faq__item--active .l-faq__answer {
-    transition: max-height 0.25s ease-in;
+    transition: max-height 0.2s ease-in;
   }
 
   .l-faq__icon {
     /* Faster icon rotation on mobile */
-    transition: transform 0.15s ease;
+    transition: transform 0.1s ease;
+    background: none;
+  }
+
+  .l-faq__item--active .l-faq__icon {
+    background: var(--blue-500);
   }
 }

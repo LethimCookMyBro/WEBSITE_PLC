@@ -100,5 +100,16 @@ export const Animator = {
       el.style.transition = "opacity 0.6s ease-out, transform 0.6s ease-out";
       observer.observe(el);
     });
+
+    // Safety fallback: Ensure everything is visible after 2s
+    // fixes blank page issues if Observer fails or elements are stuck
+    setTimeout(() => {
+      elements.forEach((el) => {
+        if (getComputedStyle(el).opacity === "0") {
+          el.style.opacity = "1";
+          el.style.transform = "none";
+        }
+      });
+    }, 2000);
   },
 };

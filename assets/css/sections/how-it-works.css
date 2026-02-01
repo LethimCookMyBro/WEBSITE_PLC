@@ -58,3 +58,18 @@
   color: var(--text-tertiary);
   line-height: 1.6;
 }
+
+/* Timeline content cards - pure white like FAQ */
+.l-timeline__content {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Override glass effects for timeline on mobile */
+@media (max-width: 768px) {
+  .l-timeline__content {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

@@ -101,10 +101,10 @@
   --text-secondary: var(--gray-700);
   --text-tertiary: var(--gray-500);
 
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px rgba(10, 22, 40, 0.08);
-  --glass-shadow-lg: 0 20px 60px rgba(10, 22, 40, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 16px rgba(10, 22, 40, 0.1);
+  --glass-shadow-lg: 0 20px 60px rgba(10, 22, 40, 0.15);
 
   --nav-bg: transparent;
   --nav-bg-scrolled: rgba(255, 255, 255, 0.85);
