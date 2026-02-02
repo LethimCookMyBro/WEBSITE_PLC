@@ -1,9 +1,9 @@
 /**
  * Database Configuration
- * SQLite using sql.js (pure JavaScript)
+ * SQLite using better-sqlite3 (Native Node.js)
  */
 
-import initSqlJs from "sql.js";
+import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -21,58 +21,54 @@ if (!fs.existsSync(dataDir)) {
 }
 
 let db = null;
-let SQL = null;
 
 /**
  * Initialize database connection
  */
 export async function initDatabase() {
-  // Initialize SQL.js
-  SQL = await initSqlJs();
-
-  // Load existing database or create new one
   try {
-    if (fs.existsSync(DB_PATH)) {
-      const fileBuffer = fs.readFileSync(DB_PATH);
-      db = new SQL.Database(fileBuffer);
-      console.log("✅ Loaded existing database from:", DB_PATH);
-    } else {
-      db = new SQL.Database();
-      console.log("✅ Created new database");
+    // Create or open database
+    db = new Database(DB_PATH);
+
+    // Enable WAL mode for better concurrency
+    db.pragma("journal_mode = WAL");
+
+    // Enable foreign keys
+    db.pragma("foreign_keys = ON");
+
+    console.log("✅ Database initialized at:", DB_PATH);
+
+    // Load and execute schema
+    const schemaPath = path.join(__dirname, "..", "models", "schema.sql");
+    const schema = fs.readFileSync(schemaPath, "utf-8");
+
+    // Execute schema (split by semicolons and run each statement)
+    const statements = schema
+      .split(";")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    for (const stmt of statements) {
+      db.exec(stmt);
     }
+
+    console.log("✅ Database schema loaded");
+
+    return db;
   } catch (error) {
-    console.error("Database load error:", error);
-    db = new SQL.Database();
+    console.error("Database initialization error:", error);
+    throw error;
   }
-
-  // Load and execute schema
-  const schemaPath = path.join(__dirname, "..", "models", "schema.sql");
-  const schema = fs.readFileSync(schemaPath, "utf-8");
-  db.run(schema);
-
-  // Enable foreign keys
-  db.run("PRAGMA foreign_keys = ON");
-
-  // Save database periodically
-  setInterval(saveDatabase, 30000); // Every 30 seconds
-
-  console.log("✅ Database initialized at:", DB_PATH);
-
-  return db;
 }
 
 /**
- * Save database to file
+ * Save database to file (no-op for better-sqlite3 - auto-saves)
  */
 export function saveDatabase() {
+  // better-sqlite3 automatically saves to disk
+  // This function is kept for API compatibility
   if (db) {
-    try {
-      const data = db.export();
-      const buffer = Buffer.from(data);
-      fs.writeFileSync(DB_PATH, buffer);
-    } catch (error) {
-      console.error("Failed to save database:", error);
-    }
+    db.pragma("wal_checkpoint(TRUNCATE)");
   }
 }
 
@@ -82,22 +78,28 @@ export function saveDatabase() {
 export async function seedDatabase(bcrypt) {
   if (!db) return;
 
-  const result = db.exec(
-    "SELECT id FROM users WHERE email = 'admin@panya.com'",
-  );
+  const stmt = db.prepare("SELECT id FROM users WHERE email = ?");
+  const result = stmt.get("admin@panya.com");
 
-  if (result.length === 0 || result[0].values.length === 0) {
+  if (!result) {
     const { v4: uuidv4 } = await import("uuid");
     const passwordHash = await bcrypt.hash("demo123", 10);
 
     // Create admin user
-    db.run(
-      `INSERT INTO users (id, email, password_hash, name, role, avatar)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [uuidv4(), "admin@panya.com", passwordHash, "เจ้าของร้าน", "admin", "A"],
+    const insertStmt = db.prepare(`
+      INSERT INTO users (id, email, password_hash, name, role, avatar)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+
+    insertStmt.run(
+      uuidv4(),
+      "admin@panya.com",
+      passwordHash,
+      "เจ้าของร้าน",
+      "admin",
+      "A",
     );
 
-    saveDatabase();
     console.log("✅ Admin user created");
   }
 }
@@ -117,15 +119,7 @@ export function query(sql, params = []) {
 
   try {
     const stmt = db.prepare(sql);
-    stmt.bind(params);
-
-    const results = [];
-    while (stmt.step()) {
-      const row = stmt.getAsObject();
-      results.push(row);
-    }
-    stmt.free();
-
+    const results = stmt.all(...params);
     return results;
   } catch (error) {
     console.error("Query error:", error, sql);
@@ -137,8 +131,16 @@ export function query(sql, params = []) {
  * Helper: Execute query and return first row
  */
 export function queryOne(sql, params = []) {
-  const results = query(sql, params);
-  return results.length > 0 ? results[0] : null;
+  if (!db) throw new Error("Database not initialized");
+
+  try {
+    const stmt = db.prepare(sql);
+    const result = stmt.get(...params);
+    return result || null;
+  } catch (error) {
+    console.error("QueryOne error:", error, sql);
+    throw error;
+  }
 }
 
 /**
@@ -148,9 +150,9 @@ export function run(sql, params = []) {
   if (!db) throw new Error("Database not initialized");
 
   try {
-    db.run(sql, params);
-    saveDatabase();
-    return { changes: db.getRowsModified() };
+    const stmt = db.prepare(sql);
+    const info = stmt.run(...params);
+    return { changes: info.changes, lastInsertRowid: info.lastInsertRowid };
   } catch (error) {
     console.error("Run error:", error, sql);
     throw error;
