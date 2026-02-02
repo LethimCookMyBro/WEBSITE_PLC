@@ -1,9 +1,9 @@
 /**
  * Database Configuration
- * SQLite using better-sqlite3 (Native Node.js)
+ * SQLite using sql.js with proper WASM loading
  */
 
-import Database from "better-sqlite3";
+import initSqlJs from "sql.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -21,38 +21,38 @@ if (!fs.existsSync(dataDir)) {
 }
 
 let db = null;
+let SQL = null;
 
 /**
  * Initialize database connection
  */
 export async function initDatabase() {
   try {
-    // Create or open database
-    db = new Database(DB_PATH);
+    // Initialize SQL.js - it will use built-in WASM
+    SQL = await initSqlJs();
 
-    // Enable WAL mode for better concurrency
-    db.pragma("journal_mode = WAL");
-
-    // Enable foreign keys
-    db.pragma("foreign_keys = ON");
-
-    console.log("✅ Database initialized at:", DB_PATH);
+    // Load existing database or create new one
+    if (fs.existsSync(DB_PATH)) {
+      const fileBuffer = fs.readFileSync(DB_PATH);
+      db = new SQL.Database(fileBuffer);
+      console.log("✅ Loaded existing database from:", DB_PATH);
+    } else {
+      db = new SQL.Database();
+      console.log("✅ Created new database");
+    }
 
     // Load and execute schema
     const schemaPath = path.join(__dirname, "..", "models", "schema.sql");
     const schema = fs.readFileSync(schemaPath, "utf-8");
+    db.run(schema);
 
-    // Execute schema (split by semicolons and run each statement)
-    const statements = schema
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
+    // Enable foreign keys
+    db.run("PRAGMA foreign_keys = ON");
 
-    for (const stmt of statements) {
-      db.exec(stmt);
-    }
+    // Save database periodically
+    setInterval(saveDatabase, 30000); // Every 30 seconds
 
-    console.log("✅ Database schema loaded");
+    console.log("✅ Database initialized at:", DB_PATH);
 
     return db;
   } catch (error) {
@@ -62,13 +62,17 @@ export async function initDatabase() {
 }
 
 /**
- * Save database to file (no-op for better-sqlite3 - auto-saves)
+ * Save database to file
  */
 export function saveDatabase() {
-  // better-sqlite3 automatically saves to disk
-  // This function is kept for API compatibility
   if (db) {
-    db.pragma("wal_checkpoint(TRUNCATE)");
+    try {
+      const data = db.export();
+      const buffer = Buffer.from(data);
+      fs.writeFileSync(DB_PATH, buffer);
+    } catch (error) {
+      console.error("Failed to save database:", error);
+    }
   }
 }
 
@@ -78,28 +82,22 @@ export function saveDatabase() {
 export async function seedDatabase(bcrypt) {
   if (!db) return;
 
-  const stmt = db.prepare("SELECT id FROM users WHERE email = ?");
-  const result = stmt.get("admin@panya.com");
+  const result = db.exec(
+    "SELECT id FROM users WHERE email = 'admin@panya.com'",
+  );
 
-  if (!result) {
+  if (result.length === 0 || result[0].values.length === 0) {
     const { v4: uuidv4 } = await import("uuid");
     const passwordHash = await bcrypt.hash("demo123", 10);
 
     // Create admin user
-    const insertStmt = db.prepare(`
-      INSERT INTO users (id, email, password_hash, name, role, avatar)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
-
-    insertStmt.run(
-      uuidv4(),
-      "admin@panya.com",
-      passwordHash,
-      "เจ้าของร้าน",
-      "admin",
-      "A",
+    db.run(
+      `INSERT INTO users (id, email, password_hash, name, role, avatar)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [uuidv4(), "admin@panya.com", passwordHash, "เจ้าของร้าน", "admin", "A"],
     );
 
+    saveDatabase();
     console.log("✅ Admin user created");
   }
 }
@@ -119,7 +117,15 @@ export function query(sql, params = []) {
 
   try {
     const stmt = db.prepare(sql);
-    const results = stmt.all(...params);
+    stmt.bind(params);
+
+    const results = [];
+    while (stmt.step()) {
+      const row = stmt.getAsObject();
+      results.push(row);
+    }
+    stmt.free();
+
     return results;
   } catch (error) {
     console.error("Query error:", error, sql);
@@ -131,16 +137,8 @@ export function query(sql, params = []) {
  * Helper: Execute query and return first row
  */
 export function queryOne(sql, params = []) {
-  if (!db) throw new Error("Database not initialized");
-
-  try {
-    const stmt = db.prepare(sql);
-    const result = stmt.get(...params);
-    return result || null;
-  } catch (error) {
-    console.error("QueryOne error:", error, sql);
-    throw error;
-  }
+  const results = query(sql, params);
+  return results.length > 0 ? results[0] : null;
 }
 
 /**
@@ -150,9 +148,9 @@ export function run(sql, params = []) {
   if (!db) throw new Error("Database not initialized");
 
   try {
-    const stmt = db.prepare(sql);
-    const info = stmt.run(...params);
-    return { changes: info.changes, lastInsertRowid: info.lastInsertRowid };
+    db.run(sql, params);
+    saveDatabase();
+    return { changes: db.getRowsModified() };
   } catch (error) {
     console.error("Run error:", error, sql);
     throw error;
