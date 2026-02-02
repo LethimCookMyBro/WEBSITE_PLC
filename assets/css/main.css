@@ -20,6 +20,7 @@
 @import "./components/forms.css";
 @import "./components/navbar.css";
 @import "./components/toggles.css";
+@import "./components/toast.css";
 
 /* ============================================
    SECTIONS
@@ -29,7 +30,7 @@
 @import "./sections/features.css";
 @import "./sections/how-it-works.css";
 @import "./sections/prototype.css";
-@import "./sections/results.css";
+
 @import "./sections/pricing.css";
 @import "./sections/faq.css";
 @import "./sections/contact.css";

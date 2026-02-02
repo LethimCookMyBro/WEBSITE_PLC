@@ -5,6 +5,7 @@
 import { Router } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { query, queryOne, run } from "../config/database.js";
+import { isValidEmail, isValidPhone, validateRequired, sanitizeString } from "../middleware/security.js";
 
 const router = Router();
 
@@ -41,14 +42,38 @@ router.get("/:id", (req, res) => {
   }
 });
 
-// Create lead (from contact form)
+// Create lead (from contact form) - with validation
 router.post("/", (req, res) => {
   try {
     const { name, position, company, email, phone, message } = req.body;
 
-    if (!name || !email) {
-      return res.status(400).json({ error: "Name and email required" });
+    // Validate required fields
+    const missing = validateRequired(req.body, ['name', 'email']);
+    if (missing.length > 0) {
+      return res.status(400).json({
+        error: `Missing required fields: ${missing.join(', ')}`
+      });
     }
+
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Validate phone if provided
+    if (phone && phone.trim() && !isValidPhone(phone)) {
+      return res.status(400).json({ error: "Invalid phone format" });
+    }
+
+    // Additional sanitization (defense in depth)
+    const sanitizedData = {
+      name: sanitizeString(name).substring(0, 100),
+      position: sanitizeString(position || '').substring(0, 100),
+      company: sanitizeString(company || '').substring(0, 200),
+      email: email.toLowerCase().trim().substring(0, 254),
+      phone: sanitizeString(phone || '').substring(0, 20),
+      message: sanitizeString(message || '').substring(0, 2000),
+    };
 
     const id = uuidv4();
     run(
@@ -56,7 +81,8 @@ router.post("/", (req, res) => {
       INSERT INTO leads (id, name, position, company, email, phone, message)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `,
-      [id, name, position, company, email, phone, message],
+      [id, sanitizedData.name, sanitizedData.position, sanitizedData.company,
+        sanitizedData.email, sanitizedData.phone, sanitizedData.message],
     );
 
     res.status(201).json({ id, success: true, message: "Lead created" });

@@ -1,382 +1,247 @@
 /**
- * PANYA Admin - Dashboard Module
- * Handles dashboard interactivity, charts, and real-time data
+ * Admin Dashboard JavaScript
+ * Handles data loading, rendering, and UI interactions
  */
 
-const Dashboard = {
-  /**
-   * Initialize dashboard
-   */
-  async init() {
-    // Check auth first
-    const user = await Auth.checkSession();
-    if (!user) return;
+// Global leads data
+let leads = [];
 
-    this.user = user;
-    this.loadUserInfo();
-    this.initSidebar();
-    this.applyPermissions();
-    this.bindEvents();
+// ============================================
+// Data Loading Functions
+// ============================================
 
-    // Load real data
-    await this.loadDashboardData();
-    await this.initCharts();
-  },
+async function loadLeads() {
+  try {
+    const result = await API.getLeads({ limit: 50 });
+    leads = result.leads || [];
+    renderLeads();
+    updateStats();
+    document.getElementById("leadsBadge").textContent = leads.filter(
+      (l) => l.status === "new" || !l.status
+    ).length;
+  } catch (error) {
+    console.error("Failed to load leads:", error);
+    leads = [];
+    renderLeads();
+  }
+}
 
-  /**
-   * Load user info into UI
-   */
-  loadUserInfo() {
-    const userAvatar = document.getElementById("userAvatar");
-    const userName = document.getElementById("userName");
-    const userRole = document.getElementById("userRole");
-
-    if (userAvatar) userAvatar.textContent = this.user.avatar || "U";
-    if (userName) userName.textContent = this.user.name;
-    if (userRole) userRole.textContent = this.capitalizeRole(this.user.role);
-  },
-
-  /**
-   * Capitalize role name
-   */
-  capitalizeRole(role) {
-    return role ? role.charAt(0).toUpperCase() + role.slice(1) : "";
-  },
-
-  /**
-   * Load dashboard statistics from API
-   */
-  async loadDashboardData() {
-    try {
-      const stats = await API.getDashboardStats();
-      this.updateStatsCards(stats);
-    } catch (error) {
-      console.error("Failed to load dashboard data:", error);
-      // Show fallback data
-      this.updateStatsCards({
-        moneySaved: 0,
-        totalQueries: 0,
-        successRate: 0,
-        kbDocuments: 0,
-      });
+async function loadAuditLogs() {
+  const container = document.getElementById("auditLogsList");
+  try {
+    const result = await API.getAuditLogs({ limit: 10 });
+    const logs = result.logs || [];
+    if (logs.length === 0) {
+      container.innerHTML = renderEmptyState("fa-history", "ไม่มี Audit Logs");
+      return;
     }
-  },
+    container.innerHTML = logs.map((log) => `
+      <div class="list-item">
+        <div class="list-item__avatar"><i class="fas fa-user-cog"></i></div>
+        <div class="list-item__content">
+          <p class="list-item__title">${log.action || log.type || "Activity"}</p>
+          <p class="list-item__subtitle">${log.user || "System"} - ${log.details || ""}</p>
+        </div>
+        <p class="list-item__time">${formatTime(log.created_at)}</p>
+      </div>
+    `).join("");
+  } catch (error) {
+    container.innerHTML = renderEmptyState("fa-history", "ไม่มี Audit Logs");
+  }
+}
 
-  /**
-   * Update stats cards with real data
-   */
-  updateStatsCards(stats) {
-    // Money Saved
-    const moneySavedEl = document.querySelector(
-      '[data-stat="money-saved"] .stat-card__value',
-    );
-    if (moneySavedEl) {
-      moneySavedEl.textContent = this.formatCurrency(stats.moneySaved || 0);
+async function loadSecurityLogs() {
+  const container = document.getElementById("securityLogsList");
+  try {
+    const result = await API.getSecurityLogs({ limit: 10 });
+    const logs = result.logs || [];
+    if (logs.length === 0) {
+      container.innerHTML = renderEmptyState("fa-shield-alt", "ไม่มี Security Logs");
+      return;
     }
+    container.innerHTML = logs.map((log) => {
+      const bgColor = log.success ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)";
+      const textColor = log.success ? "#22c55e" : "#ef4444";
+      const icon = log.success ? "fa-check" : "fa-times";
+      return `
+        <div class="list-item">
+          <div class="list-item__avatar" style="background: ${bgColor}; color: ${textColor}">
+            <i class="fas ${icon}"></i>
+          </div>
+          <div class="list-item__content">
+            <p class="list-item__title">${log.action || "Login Attempt"}</p>
+            <p class="list-item__subtitle">IP: ${log.ip || "Unknown"} - ${log.user || "Unknown User"}</p>
+          </div>
+          <p class="list-item__time">${formatTime(log.created_at)}</p>
+        </div>
+      `;
+    }).join("");
+  } catch (error) {
+    container.innerHTML = renderEmptyState("fa-shield-alt", "ไม่มี Security Logs");
+  }
+}
 
-    // Total Queries
-    const queriesEl = document.querySelector(
-      '[data-stat="total-queries"] .stat-card__value',
-    );
-    if (queriesEl) {
-      queriesEl.textContent = this.formatNumber(stats.totalQueries || 0);
-    }
+function loadServerLogs() {
+  const container = document.getElementById("serverLogsList");
+  const logs = [
+    { type: "info", message: "Server started on port 3000", time: new Date(Date.now() - 3600000).toISOString() },
+    { type: "info", message: "Database connected successfully", time: new Date(Date.now() - 3500000).toISOString() },
+    { type: "success", message: "API routes initialized", time: new Date(Date.now() - 3400000).toISOString() },
+  ];
 
-    // Success Rate
-    const successEl = document.querySelector(
-      '[data-stat="success-rate"] .stat-card__value',
-    );
-    if (successEl) {
-      successEl.textContent = `${stats.successRate || 0}%`;
-    }
+  container.innerHTML = logs.map((log) => {
+    const iconColor = log.type === "error" ? "#ef4444" : log.type === "warning" ? "#f59e0b" : "#22c55e";
+    const icon = log.type === "error" ? "fa-times-circle" : log.type === "warning" ? "fa-exclamation-circle" : "fa-check-circle";
+    return `
+      <div class="list-item">
+        <div class="list-item__avatar" style="background: ${iconColor}20; color: ${iconColor}">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="list-item__content">
+          <p class="list-item__title">${log.message}</p>
+          <p class="list-item__subtitle">[${log.type.toUpperCase()}]</p>
+        </div>
+        <p class="list-item__time">${formatTime(log.time)}</p>
+      </div>
+    `;
+  }).join("");
+}
 
-    // KB Documents / Active Users
-    const kbEl = document.querySelector(
-      '[data-stat="kb-docs"] .stat-card__value',
-    );
-    if (kbEl) {
-      kbEl.textContent = this.formatNumber(stats.kbDocuments || 0);
-    }
-  },
+// ============================================
+// Rendering Functions
+// ============================================
 
-  /**
-   * Format number with commas
-   */
-  formatNumber(num) {
-    return new Intl.NumberFormat().format(num);
-  },
+function renderLeads() {
+  const container = document.getElementById("leadsList");
+  if (leads.length === 0) {
+    container.innerHTML = renderEmptyState("fa-inbox", "ยังไม่มีลูกค้าที่สนใจ");
+    return;
+  }
 
-  /**
-   * Format currency
-   */
-  formatCurrency(num) {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-    }).format(num);
-  },
+  container.innerHTML = leads.map((l, i) => {
+    const time = l.created_at ? formatTime(l.created_at) : "ไม่ทราบ";
+    const status = l.status || "new";
+    const badgeClass = status === "new" ? "new" : status === "contacted" ? "pending" : "resolved";
+    const badgeText = status === "new" ? "ใหม่" : status === "contacted" ? "ติดต่อแล้ว" : "เสร็จสิ้น";
 
-  /**
-   * Initialize sidebar behavior
-   */
-  initSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const mobileToggle = document.getElementById("mobileMenuToggle");
-    const overlay = document.getElementById("sidebarOverlay");
-    const mainContent = document.querySelector(".admin-main");
+    return `
+      <div class="list-item" onclick="showLead(${i})">
+        <div class="list-item__avatar">${l.name ? l.name.charAt(0) : "?"}</div>
+        <div class="list-item__content">
+          <p class="list-item__title">${l.name || "ไม่ระบุชื่อ"} — ${l.company || "ไม่ระบุบริษัท"}</p>
+          <p class="list-item__subtitle">${l.message || "ไม่มีข้อความ"}</p>
+        </div>
+        <div>
+          <span class="badge badge--${badgeClass}">${badgeText}</span>
+          <p class="list-item__time">${time}</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
 
-    // Desktop collapse toggle
-    sidebarToggle?.addEventListener("click", () => {
-      sidebar.classList.toggle("admin-sidebar--collapsed");
-      mainContent?.classList.toggle("admin-main--collapsed");
+function renderEmptyState(icon, message) {
+  return `
+    <div class="empty-state">
+      <i class="fas ${icon} empty-state__icon"></i>
+      ${message}
+    </div>
+  `;
+}
 
-      const isCollapsed = sidebar.classList.contains(
-        "admin-sidebar--collapsed",
-      );
-      localStorage.setItem("sidebar_collapsed", isCollapsed);
-    });
+function updateStats() {
+  const total = leads.length;
+  const today = new Date().toISOString().split("T")[0];
+  const newToday = leads.filter((l) => l.created_at && l.created_at.startsWith(today)).length;
+  const pending = leads.filter((l) => l.status === "new" || !l.status).length;
+  const contacted = leads.filter((l) => l.status === "contacted").length;
 
-    // Load saved preference
-    if (localStorage.getItem("sidebar_collapsed") === "true") {
-      sidebar?.classList.add("admin-sidebar--collapsed");
-      mainContent?.classList.add("admin-main--collapsed");
-    }
+  document.getElementById("statTotalLeads").textContent = total;
+  document.getElementById("statNewToday").textContent = newToday;
+  document.getElementById("statPending").textContent = pending;
+  document.getElementById("statContacted").textContent = contacted;
+}
 
-    // Mobile menu toggle
-    mobileToggle?.addEventListener("click", () => {
-      sidebar.classList.toggle("admin-sidebar--open");
-    });
+// ============================================
+// Utility Functions
+// ============================================
 
-    // Close on overlay click
-    overlay?.addEventListener("click", () => {
-      sidebar.classList.remove("admin-sidebar--open");
-    });
+function formatTime(dateStr) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000 / 60); // minutes
 
-    // Close on escape
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        sidebar.classList.remove("admin-sidebar--open");
-      }
-    });
-  },
+  if (diff < 1) return "เมื่อกี้";
+  if (diff < 60) return `${diff} นาทีที่แล้ว`;
+  if (diff < 1440) return `${Math.floor(diff / 60)} ชั่วโมงที่แล้ว`;
+  return `${Math.floor(diff / 1440)} วันที่แล้ว`;
+}
 
-  /**
-   * Apply role-based permissions to sidebar
-   */
-  applyPermissions() {
-    const role = this.user.role;
+// ============================================
+// Modal Functions
+// ============================================
 
-    // Define permissions
-    const rolePermissions = {
-      admin: ["admin", "engineer", "viewer"],
-      engineer: ["engineer", "viewer"],
-      viewer: ["viewer"],
-    };
+function showLead(i) {
+  const l = leads[i];
+  if (!l) return;
 
-    const userPermissions = rolePermissions[role] || [];
+  document.getElementById("leadDetail").innerHTML = `
+    <div class="lead-detail">
+      <div class="lead-detail__row"><span class="lead-detail__label">ชื่อ:</span><span class="lead-detail__value">${l.name || "-"}</span></div>
+      <div class="lead-detail__row"><span class="lead-detail__label">ตำแหน่ง:</span><span class="lead-detail__value">${l.position || "-"}</span></div>
+      <div class="lead-detail__row"><span class="lead-detail__label">บริษัท:</span><span class="lead-detail__value">${l.company || "-"}</span></div>
+      <div class="lead-detail__row"><span class="lead-detail__label">อีเมล:</span><span class="lead-detail__value">${l.email || "-"}</span></div>
+      <div class="lead-detail__row"><span class="lead-detail__label">โทร:</span><span class="lead-detail__value">${l.phone || "-"}</span></div>
+      <div class="lead-detail__message">${l.message || "ไม่มีข้อความ"}</div>
+    </div>
+  `;
+  document.getElementById("leadModal").classList.add("modal--open");
+}
 
-    // Hide sections based on permissions
-    document.querySelectorAll("[data-permission]").forEach((el) => {
-      const required = el.dataset.permission;
-      if (!userPermissions.includes(required)) {
-        el.style.display = "none";
-      }
-    });
-  },
+function closeModal() {
+  document.getElementById("leadModal").classList.remove("modal--open");
+}
 
-  // Store chart instance to prevent duplicates
-  chartInstance: null,
-  chartInitialized: false,
+// ============================================
+// Export Functions
+// ============================================
 
-  /**
-   * Initialize Chart.js charts with real data
-   */
-  async initCharts() {
-    // Only initialize once
-    if (this.chartInitialized) return;
-    this.chartInitialized = true;
+function exportLeads() {
+  if (leads.length === 0) {
+    alert("ไม่มีข้อมูลลูกค้าให้ Export");
+    return;
+  }
 
-    await this.initQueryChart();
-  },
+  const headers = ["ชื่อ", "ตำแหน่ง", "บริษัท", "อีเมล", "โทร", "ข้อความ", "สถานะ", "วันที่"];
+  const rows = leads.map((l) => [
+    l.name || "",
+    l.position || "",
+    l.company || "",
+    l.email || "",
+    l.phone || "",
+    (l.message || "").replace(/,/g, ";"),
+    l.status || "new",
+    l.created_at || "",
+  ]);
 
-  /**
-   * Initialize Query Trends Chart
-   */
-  async initQueryChart() {
-    const ctx = document.getElementById("queryChart");
-    if (!ctx) return;
+  const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `leads_${new Date().toISOString().split("T")[0]}.csv`;
+  link.click();
+}
 
-    // Destroy existing chart if any
-    if (this.chartInstance) {
-      this.chartInstance.destroy();
-      this.chartInstance = null;
-    }
+// ============================================
+// Initialize Dashboard
+// ============================================
 
-    // Try to get real data from audit logs
-    let chartData;
-    try {
-      const auditStats = await API.getAuditStats();
-      chartData = this.processChartData(auditStats);
-    } catch (error) {
-      console.log("Using mock chart data");
-      chartData = this.getMockChartData();
-    }
+function initDashboard() {
+  loadLeads();
+  loadAuditLogs();
+  loadSecurityLogs();
+  loadServerLogs();
+}
 
-    // Create chart and store instance
-    this.chartInstance = new Chart(ctx, {
-      type: "line",
-      data: chartData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        animation: {
-          duration: 500, // Reduce animation for better performance
-        },
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: "#9ca3af",
-              usePointStyle: true,
-              padding: 20,
-            },
-          },
-        },
-        scales: {
-          x: {
-            grid: { color: "rgba(255, 255, 255, 0.05)" },
-            ticks: { color: "#9ca3af" },
-          },
-          y: {
-            grid: { color: "rgba(255, 255, 255, 0.05)" },
-            ticks: { color: "#9ca3af" },
-            beginAtZero: true,
-          },
-        },
-      },
-    });
-  },
-
-  /**
-   * Process audit stats for chart
-   */
-  processChartData(auditStats) {
-    const labels = auditStats.dailyStats?.map((d) => d.date) || [];
-    const data = auditStats.dailyStats?.map((d) => d.count) || [];
-
-    return {
-      labels: labels.length
-        ? labels
-        : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      datasets: [
-        {
-          label: "Total Activity",
-          data: data.length ? data : [245, 312, 287, 356, 298, 189, 160],
-          borderColor: "#3b82f6",
-          backgroundColor: "rgba(59, 130, 246, 0.1)",
-          fill: true,
-          tension: 0.4,
-        },
-      ],
-    };
-  },
-
-  /**
-   * Get mock chart data
-   */
-  getMockChartData() {
-    return {
-      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      datasets: [
-        {
-          label: "Total Queries",
-          data: [245, 312, 287, 356, 298, 189, 160],
-          borderColor: "#3b82f6",
-          backgroundColor: "rgba(59, 130, 246, 0.1)",
-          fill: true,
-          tension: 0.4,
-        },
-        {
-          label: "AI Resolved",
-          data: [230, 295, 268, 340, 280, 178, 152],
-          borderColor: "#22c55e",
-          backgroundColor: "rgba(34, 197, 94, 0.1)",
-          fill: true,
-          tension: 0.4,
-        },
-        {
-          label: "Escalated",
-          data: [15, 17, 19, 16, 18, 11, 8],
-          borderColor: "#f59e0b",
-          backgroundColor: "rgba(245, 158, 11, 0.1)",
-          fill: true,
-          tension: 0.4,
-        },
-      ],
-    };
-  },
-
-  /**
-   * Bind UI events
-   */
-  bindEvents() {
-    // User menu logout
-    const userMenu = document.getElementById("userMenu");
-    userMenu?.addEventListener("click", async () => {
-      if (confirm("คุณต้องการออกจากระบบหรือไม่?")) {
-        await Auth.logout();
-      }
-    });
-
-    // Table sorting
-    document.querySelectorAll(".admin-table th.sortable").forEach((th) => {
-      th.addEventListener("click", () => {
-        this.handleSort(th);
-      });
-    });
-
-    // Refresh data every 30 seconds
-    setInterval(() => {
-      this.loadDashboardData();
-    }, 30000);
-  },
-
-  /**
-   * Handle table sorting
-   */
-  handleSort(th) {
-    const table = th.closest("table");
-    const headerRow = th.parentElement;
-    const columnIndex = Array.from(headerRow.children).indexOf(th);
-    const tbody = table.querySelector("tbody");
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-
-    headerRow.querySelectorAll("th").forEach((cell) => {
-      if (cell !== th) {
-        cell.classList.remove("sorted-asc", "sorted-desc");
-      }
-    });
-
-    const isAsc = th.classList.contains("sorted-asc");
-    th.classList.remove("sorted-asc", "sorted-desc");
-    th.classList.add(isAsc ? "sorted-desc" : "sorted-asc");
-
-    rows.sort((a, b) => {
-      const aVal = a.children[columnIndex].textContent.trim();
-      const bVal = b.children[columnIndex].textContent.trim();
-      return isAsc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
-    });
-
-    rows.forEach((row) => tbody.appendChild(row));
-  },
-};
-
-// Initialize when DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-  Dashboard.init();
-});
-
-// Export for global access
-window.Dashboard = Dashboard;
+// Auto-initialize when DOM is ready
+document.addEventListener("DOMContentLoaded", initDashboard);

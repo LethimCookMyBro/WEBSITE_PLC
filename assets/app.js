@@ -8,7 +8,8 @@ import { AppState } from "./js/modules/AppState.js";
 import { I18n } from "./js/modules/I18n.js";
 import { UI } from "./js/modules/UI.js";
 import { FormValidator } from "./js/modules/FormValidator.js";
-import { ScrollHandler, Animator } from "./js/modules/Animators.js";
+import { ScrollHandler } from "./js/modules/Animators.js";
+import { Toast } from "./js/modules/Toast.js";
 
 // ============================================
 // EVENT BINDING
@@ -102,7 +103,7 @@ function bindEvents() {
       console.log("✅ Lead submitted:", result);
     } catch (error) {
       console.error("Form submission error:", error);
-      alert("เกิดข้อผิดพลาด: " + error.message);
+      Toast.error("เกิดข้อผิดพลาด", error.message);
     } finally {
       // Restore button
       submitBtn.disabled = false;
@@ -158,7 +159,6 @@ function init() {
 
   // Initialize modules
   ScrollHandler.init();
-  Animator.init();
 
   // Bind events
   bindEvents();

@@ -5,6 +5,7 @@
 
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import { config } from "dotenv";
@@ -22,6 +23,10 @@ import bcrypt from "bcryptjs";
 import authRoutes from "./routes/auth.js";
 import leadsRoutes from "./routes/leads.js";
 
+// Security Middleware
+import { securityHeaders, sanitizeBody } from "./middleware/security.js";
+import { apiLimiter } from "./middleware/rateLimit.js";
+
 config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,11 +35,57 @@ const PORT = process.env.PORT || 3000;
 
 app.set("trust proxy", 1);
 
-// CORS
-app.use(cors({ origin: "*", credentials: true }));
+// ==========================================
+// SECURITY MIDDLEWARE
+// ==========================================
 
-// Body parsing
-app.use(express.json());
+// Helmet - Security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Required for fonts
+}));
+
+// Custom security headers
+app.use(securityHeaders);
+
+// CORS - Configured for production
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Body parsing with size limit
+app.use(express.json({ limit: '10kb' }));
+
+// Sanitize all incoming request bodies
+app.use(sanitizeBody);
+
+// Rate limiting for API routes
+app.use('/api', apiLimiter);
 
 // ==========================================
 // STATIC FILES - Serve Frontend

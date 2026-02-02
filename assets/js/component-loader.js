@@ -11,7 +11,7 @@ const ComponentLoader = {
     ["product-container", "components/product.html"],
     ["how-it-works-container", "components/how-it-works.html"],
     ["prototype-container", "components/prototype.html"],
-    ["results-container", "components/results.html"],
+
     ["pricing-container", "components/pricing.html"],
     ["faq-container", "components/faq.html"],
     ["contact-container", "components/contact.html"],

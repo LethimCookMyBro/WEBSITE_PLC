@@ -8,6 +8,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -24,6 +25,7 @@
     opacity: 0;
     transform: translateY(60px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -34,6 +36,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -41,10 +44,12 @@
 
 /* Floating Animation - Combined version */
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0px) rotate(0deg);
   }
+
   50% {
     transform: translateY(-10px) rotate(5deg);
   }
@@ -55,6 +60,7 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -67,10 +73,12 @@
 
 /* Gradient Border Animation */
 @keyframes gradientBorder {
+
   0%,
   100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -78,10 +86,12 @@
 
 /* Badge Pulse Animation */
 @keyframes badgePulse {
+
   0%,
   100% {
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
   }
+
   50% {
     box-shadow: 0 4px 25px rgba(139, 92, 246, 0.6);
   }
@@ -93,6 +103,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -103,15 +114,19 @@
 .stagger-1 {
   animation-delay: 0.1s;
 }
+
 .stagger-2 {
   animation-delay: 0.2s;
 }
+
 .stagger-3 {
   animation-delay: 0.3s;
 }
+
 .stagger-4 {
   animation-delay: 0.4s;
 }
+
 .stagger-5 {
   animation-delay: 0.5s;
 }
@@ -120,29 +135,34 @@
 
 /* Glitch Text Effect */
 @keyframes glitch {
+
   0%,
   100% {
     transform: translate(0);
     text-shadow: none;
   }
+
   20% {
     transform: translate(-2px, 2px);
     text-shadow:
       2px 0 var(--blue-500),
       -2px 0 #8b5cf6;
   }
+
   40% {
     transform: translate(2px, -2px);
     text-shadow:
       -2px 0 var(--blue-500),
       2px 0 #8b5cf6;
   }
+
   60% {
     transform: translate(-1px, 1px);
     text-shadow:
       1px 0 var(--blue-500),
       -1px 0 #8b5cf6;
   }
+
   80% {
     transform: translate(1px, -1px);
     text-shadow:
@@ -162,10 +182,12 @@
 
 /* Typing Cursor Effect */
 @keyframes blink-cursor {
+
   0%,
   50% {
     border-color: var(--blue-500);
   }
+
   51%,
   100% {
     border-color: transparent;
@@ -187,6 +209,7 @@
   0% {
     transform: translateY(-100%);
   }
+
   100% {
     transform: translateY(100vh);
   }
@@ -210,12 +233,15 @@
     transform: translateY(-100%);
     opacity: 0;
   }
+
   10% {
     opacity: 1;
   }
+
   90% {
     opacity: 1;
   }
+
   100% {
     transform: translateY(100%);
     opacity: 0;
@@ -227,12 +253,10 @@
   top: 0;
   width: 2px;
   height: 20%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--blue-500),
-    transparent
-  );
+  background: linear-gradient(to bottom,
+      transparent,
+      var(--blue-500),
+      transparent);
   animation: data-stream 2s linear infinite;
   pointer-events: none;
 }
@@ -241,18 +265,22 @@
   left: 10%;
   animation-delay: 0s;
 }
+
 .c-data-stream:nth-child(2) {
   left: 30%;
   animation-delay: 0.5s;
 }
+
 .c-data-stream:nth-child(3) {
   left: 50%;
   animation-delay: 1s;
 }
+
 .c-data-stream:nth-child(4) {
   left: 70%;
   animation-delay: 1.5s;
 }
+
 .c-data-stream:nth-child(5) {
   left: 90%;
   animation-delay: 2s;
@@ -260,12 +288,14 @@
 
 /* Circuit Glow Animation */
 @keyframes circuit-glow {
+
   0%,
   100% {
     box-shadow:
       0 0 5px var(--blue-500),
       inset 0 0 5px rgba(59, 130, 246, 0.1);
   }
+
   50% {
     box-shadow:
       0 0 20px var(--blue-500),
@@ -283,6 +313,7 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 60px 60px;
   }
@@ -310,20 +341,19 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 .c-holo-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(59, 130, 246, 0.1) 25%,
-    rgba(139, 92, 246, 0.1) 50%,
-    rgba(59, 130, 246, 0.1) 75%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(59, 130, 246, 0.1) 25%,
+      rgba(139, 92, 246, 0.1) 50%,
+      rgba(59, 130, 246, 0.1) 75%,
+      transparent 100%);
   background-size: 200% 100%;
   animation: holo-shimmer 3s ease-in-out infinite;
 }
@@ -334,12 +364,15 @@
     transform: translateY(-100%);
     opacity: 0;
   }
+
   20% {
     opacity: 0.3;
   }
+
   80% {
     opacity: 0.3;
   }
+
   100% {
     transform: translateY(300%);
     opacity: 0;
@@ -365,12 +398,14 @@
 
 /* Loading Dots */
 @keyframes loading-dots {
+
   0%,
   80%,
   100% {
     transform: scale(0);
     opacity: 0.5;
   }
+
   40% {
     transform: scale(1);
     opacity: 1;
@@ -390,9 +425,11 @@
 .c-loading-dots span:nth-child(1) {
   animation-delay: -0.32s;
 }
+
 .c-loading-dots span:nth-child(2) {
   animation-delay: -0.16s;
 }
+
 .c-loading-dots span:nth-child(3) {
   animation-delay: 0s;
 }
@@ -401,6 +438,7 @@
    Mobile Performance Optimization
    ============================================ */
 @media (max-width: 768px) {
+
   /* Disable expensive animations on mobile for performance */
   /* Decorative elements can be hidden */
   .c-cyber-grid::before,
@@ -415,7 +453,8 @@
   .c-holo-shimmer,
   .c-circuit-glow {
     animation: none !important;
-    background-size: cover !important; /* Reset specific animation props if needed */
+    background-size: cover !important;
+    /* Reset specific animation props if needed */
     box-shadow: none !important;
   }
 
@@ -460,6 +499,7 @@
    Respect Reduced Motion Preferences
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -468,4 +508,55 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ============================================
+   GLOBAL PERFORMANCE FIX - Disable Heavy Effects
+   ============================================ */
+
+/* Disable all backdrop-filter (very GPU intensive) */
+.c-glass-card,
+.l-proto__feature,
+.l-hero__float,
+.l-navbar--scrolled,
+[class*="glass"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Disable all infinite animations */
+.c-cyber-grid::before,
+.c-matrix-bg,
+.c-scan-line,
+.c-data-stream,
+.c-holo-shimmer,
+.c-circuit-glow,
+.animate-pulse,
+[class*="pulse"],
+[class*="shimmer"],
+[class*="glow"],
+[class*="float"] {
+  animation: none !important;
+}
+
+/* Simplify backgrounds */
+.c-glass-card {
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+[data-theme="dark"] .c-glass-card {
+  background: rgba(30, 41, 59, 0.98) !important;
+}
+
+.l-navbar--scrolled {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+[data-theme="dark"] .l-navbar--scrolled {
+  background: rgba(15, 29, 51, 0.95) !important;
+}
+
+/* Faster transitions globally */
+* {
+  transition-duration: 0.15s !important;
 }

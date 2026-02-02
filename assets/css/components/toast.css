@@ -1,0 +1,249 @@
+/* ============================================
+   Toast Notifications
+   ============================================ */
+
+.c-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.c-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 400px;
+    min-width: 280px;
+}
+
+.c-toast--visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.c-toast--success {
+    border-left: 4px solid #22c55e;
+}
+
+.c-toast--error {
+    border-left: 4px solid #ef4444;
+}
+
+.c-toast--warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.c-toast--info {
+    border-left: 4px solid #3b82f6;
+}
+
+.c-toast__icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.c-toast--success .c-toast__icon {
+    background: #dcfce7;
+    color: #22c55e;
+}
+
+.c-toast--error .c-toast__icon {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.c-toast--warning .c-toast__icon {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.c-toast--info .c-toast__icon {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+.c-toast__content {
+    flex: 1;
+}
+
+.c-toast__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
+}
+
+.c-toast__message {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.c-toast__close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 16px;
+    transition: color 0.15s;
+}
+
+.c-toast__close:hover {
+    color: #ef4444;
+}
+
+/* Dark mode */
+[data-theme="dark"] .c-toast {
+    background: #1e293b;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .c-toast__title {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .c-toast__message {
+    color: #94a3b8;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .c-toast-container {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .c-toast {
+        min-width: unset;
+        max-width: unset;
+    }
+}
+
+/* ============================================
+   Loading Skeleton
+   ============================================ */
+
+.c-skeleton {
+    background: linear-gradient(90deg,
+            #e2e8f0 0%,
+            #f1f5f9 50%,
+            #e2e8f0 100%);
+    background-size: 200% 100%;
+    animation: c-skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+@keyframes c-skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.c-skeleton--text {
+    height: 16px;
+    width: 100%;
+}
+
+.c-skeleton--title {
+    height: 24px;
+    width: 60%;
+}
+
+.c-skeleton--avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+.c-skeleton--card {
+    height: 120px;
+    width: 100%;
+}
+
+.c-skeleton--button {
+    height: 44px;
+    width: 120px;
+    border-radius: 8px;
+}
+
+/* Dark mode skeleton */
+[data-theme="dark"] .c-skeleton {
+    background: linear-gradient(90deg,
+            #334155 0%,
+            #475569 50%,
+            #334155 100%);
+    background-size: 200% 100%;
+}
+
+/* ============================================
+   Theme Toggle Animation
+   ============================================ */
+
+.c-theme-toggle {
+    position: relative;
+    overflow: hidden;
+}
+
+.c-theme-toggle i {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease;
+}
+
+.c-theme-toggle--switching i {
+    transform: rotate(360deg) scale(0);
+    opacity: 0;
+}
+
+/* Smooth body transition for theme changes */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* All elements should transition colors smoothly */
+*,
+*::before,
+*::after {
+    transition: background-color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* Exception for elements that shouldn't have transitions */
+input,
+textarea,
+button,
+a,
+.c-toast,
+.c-skeleton {
+    transition: none;
+}
+
+/* Re-enable specific transitions for interactive elements */
+button,
+a {
+    transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
