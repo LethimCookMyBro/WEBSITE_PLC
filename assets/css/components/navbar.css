@@ -102,6 +102,17 @@
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
+  /* FORCE FIX: Prevent text from disappearing during sibling animation */
+  position: relative;
+  z-index: 5;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: opacity, transform;
+}
+
+.l-navbar__logo:hover .l-navbar__logo-text {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Nav Links */

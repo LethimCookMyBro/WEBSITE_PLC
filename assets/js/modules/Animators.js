@@ -38,7 +38,10 @@ export const ScrollHandler = {
 
     AppState.closeMobileMenu();
 
-    const navHeight = UI.elements.navbar?.offsetHeight || 80;
+    const navHeight =
+      UI.elements?.navbar?.offsetHeight ||
+      document.getElementById("navbar")?.offsetHeight ||
+      80;
     const targetPosition =
       target.getBoundingClientRect().top + window.scrollY - navHeight - 20;
 

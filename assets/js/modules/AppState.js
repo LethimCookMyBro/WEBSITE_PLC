@@ -45,8 +45,14 @@ export const AppState = {
     document.documentElement.setAttribute("data-theme", this.currentTheme);
 
     // Update theme toggle icons (desktop and mobile)
-    const themeIcon = document.getElementById("themeIcon");
-    const mobileThemeIcon = document.getElementById("mobileThemeIcon");
+    // Use UI cache if available, otherwise query
+    const themeIcon =
+      UI.elements?.themeToggle?.querySelector("i") ||
+      document.getElementById("themeIcon");
+    const mobileThemeIcon =
+      UI.elements?.mobileThemeToggle?.querySelector("i") ||
+      document.getElementById("mobileThemeIcon");
+
     const iconClass =
       this.currentTheme === "light" ? "fas fa-moon" : "fas fa-sun";
 
@@ -62,6 +68,13 @@ export const AppState = {
     document.documentElement.setAttribute("lang", this.currentLang);
     I18n.updateAll(this.currentLang);
     UI.updateLangToggle(this.currentLang);
+
+    // Dispatch event for other components (like TypingDemo) to react
+    document.dispatchEvent(
+      new CustomEvent("languageChanged", {
+        detail: { lang: this.currentLang },
+      }),
+    );
   },
 
   setScrolled(scrolled) {

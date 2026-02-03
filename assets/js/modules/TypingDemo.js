@@ -16,17 +16,38 @@ class TypingDemo {
   init() {
     // Wait for components to load
     document.addEventListener("componentsLoaded", () => this.setup());
+
+    // Listen for language changes
+    document.addEventListener("languageChanged", () =>
+      this.handleLanguageChange(),
+    );
+
     // Fallback
     if (document.readyState === "complete") {
       setTimeout(() => this.setup(), 500);
     }
   }
 
+  handleLanguageChange() {
+    this.stop();
+    // Wait for I18n to update the text in the DOM
+    setTimeout(() => {
+      // Clear cached "original" text so we fetch new translated text
+      if (this.heroCard) {
+        const userChat = this.heroCard.querySelector(".l-hero__chat--user p");
+        const aiChat = this.heroCard.querySelector(".l-hero__chat--ai p");
+        if (userChat) userChat.removeAttribute("data-original");
+        if (aiChat) aiChat.removeAttribute("data-original");
+      }
+      this.startDemo();
+    }, 100);
+  }
+
   setup() {
     this.heroCard = document.querySelector(".l-hero__card-body");
     if (!this.heroCard) return;
 
-    // Only run on larger screens for performance
+    // Only run on larger screens for performance (keep this check)
     if (window.innerWidth <= 768) return;
 
     // Wait for i18n to populate content
@@ -34,7 +55,9 @@ class TypingDemo {
   }
 
   async startDemo() {
-    if (this.isActive) return;
+    // Ensure we don't have multiple loops running
+    this.stop();
+    this.isActive = true;
 
     const userChat = this.heroCard.querySelector(".l-hero__chat--user p");
     const aiChat = this.heroCard.querySelector(".l-hero__chat--ai p");
@@ -42,7 +65,8 @@ class TypingDemo {
 
     if (!userChat || !aiChat) return;
 
-    // Get text - check stored original first, then current textContent
+    // Get text - check stored original first, then current textContent (which I18n just updated)
+    // IMPORTANT: On language change, we cleared data-original, so we will grab new textContent
     let userText =
       userChat.getAttribute("data-original") || userChat.textContent;
     let aiText = aiChat.getAttribute("data-original") || aiChat.textContent;
@@ -54,14 +78,12 @@ class TypingDemo {
       userText.trim() === "" ||
       aiText.trim() === ""
     ) {
-      console.log("TypingDemo: Waiting for i18n content...");
-      setTimeout(() => this.startDemo(), 500);
+      //   console.log("TypingDemo: Waiting for i18n content...");
+      if (this.isActive) setTimeout(() => this.startDemo(), 500);
       return;
     }
 
-    this.isActive = true;
-
-    // Save original
+    // Save original (so we don't lose it when we clear for typing)
     userChat.setAttribute("data-original", userText);
     aiChat.setAttribute("data-original", aiText);
 
@@ -76,16 +98,19 @@ class TypingDemo {
       // Type user message
       await this.typeText(userChat, userText);
       await this.sleep(this.pauseAfterUser);
+      if (!this.isActive) break; // Check interrupt
 
       // Show AI chat container with typing indicator
       aiChat.parentElement.style.opacity = "1";
       aiChat.innerHTML =
         '<span class="typing-indicator"><span></span><span></span><span></span></span>';
       await this.sleep(800);
+      if (!this.isActive) break;
 
       // Type AI response
       aiChat.textContent = "";
       await this.typeText(aiChat, aiText);
+      if (!this.isActive) break;
 
       // Show citation with fade
       if (citation) {
@@ -102,6 +127,7 @@ class TypingDemo {
     if (!text || typeof text !== "string") return;
 
     for (let i = 0; i < text.length; i++) {
+      if (!this.isActive) return; // Immediate interrupt
       element.textContent += text[i];
       // Vary typing speed slightly for realism
       const speed = this.typingSpeed + Math.random() * 20 - 10;
