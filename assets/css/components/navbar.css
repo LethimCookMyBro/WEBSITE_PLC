@@ -102,14 +102,16 @@
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
-  /* FINAL SAFEGUARD: Lock everything to prevent "effects" */
+  /* FINAL STRUCTURE FIX: Match icon geometry perfectly */
   position: relative;
   z-index: 5;
-  display: inline-block;
+  height: 40px; /* Match icon height */
+  display: flex; /* Use flex to center text vertically */
+  align-items: center;
   flex-shrink: 0;
-  line-height: 1.2;
-  transition: none !important; /* KILL any sliding animation */
-  transform: none !important; /* PREVENT any movement */
+  line-height: 1;
+  transition: none !important;
+  transform: none !important;
 }
 
 .l-navbar__logo:hover .l-navbar__logo-text {
