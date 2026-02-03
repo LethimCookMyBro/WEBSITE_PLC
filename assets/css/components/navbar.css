@@ -72,9 +72,7 @@
 }
 
 /* Remove hover effect on parent to prevent text rendering glitches */
-.l-navbar__logo:hover {
-  /* No transform on parent */
-}
+/* Parent hover effect removed */
 
 .l-navbar__logo-icon {
   width: 40px;
@@ -94,7 +92,9 @@
 
 .l-navbar__logo:hover .l-navbar__logo-icon {
   box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
-  transform: rotate(-5deg);
+  transform: scale(
+    1.05
+  ); /* Rotate causes blur/pixelation on some screens, simplified to scale */
 }
 
 .l-navbar__logo-text {
@@ -102,16 +102,19 @@
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
-  /* SAFE FIX: Remove 3D transforms which cause clipping on Windows */
+  /* FINAL SAFEGUARD: Lock everything to prevent "effects" */
   position: relative;
   z-index: 5;
-  display: inline-block; /* Ensure it holds its own box */
-  flex-shrink: 0; /* Never let the logo text shrink */
+  display: inline-block;
+  flex-shrink: 0;
   line-height: 1.2;
+  transition: none !important; /* KILL any sliding animation */
+  transform: none !important; /* PREVENT any movement */
 }
 
 .l-navbar__logo:hover .l-navbar__logo-text {
-  /* No forced opacity needed if we don't break the layer */
+  color: var(--text-primary) !important;
+  opacity: 1 !important;
 }
 
 /* Nav Links */
