@@ -44,7 +44,6 @@
 
 /* Floating Animation - Combined version */
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0px) rotate(0deg);
@@ -73,7 +72,6 @@
 
 /* Gradient Border Animation */
 @keyframes gradientBorder {
-
   0%,
   100% {
     background-position: 0% 50%;
@@ -86,7 +84,6 @@
 
 /* Badge Pulse Animation */
 @keyframes badgePulse {
-
   0%,
   100% {
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
@@ -135,7 +132,6 @@
 
 /* Glitch Text Effect */
 @keyframes glitch {
-
   0%,
   100% {
     transform: translate(0);
@@ -182,7 +178,6 @@
 
 /* Typing Cursor Effect */
 @keyframes blink-cursor {
-
   0%,
   50% {
     border-color: var(--blue-500);
@@ -253,10 +248,12 @@
   top: 0;
   width: 2px;
   height: 20%;
-  background: linear-gradient(to bottom,
-      transparent,
-      var(--blue-500),
-      transparent);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--blue-500),
+    transparent
+  );
   animation: data-stream 2s linear infinite;
   pointer-events: none;
 }
@@ -288,7 +285,6 @@
 
 /* Circuit Glow Animation */
 @keyframes circuit-glow {
-
   0%,
   100% {
     box-shadow:
@@ -348,12 +344,14 @@
 }
 
 .c-holo-shimmer {
-  background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(59, 130, 246, 0.1) 25%,
-      rgba(139, 92, 246, 0.1) 50%,
-      rgba(59, 130, 246, 0.1) 75%,
-      transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(59, 130, 246, 0.1) 25%,
+    rgba(139, 92, 246, 0.1) 50%,
+    rgba(59, 130, 246, 0.1) 75%,
+    transparent 100%
+  );
   background-size: 200% 100%;
   animation: holo-shimmer 3s ease-in-out infinite;
 }
@@ -398,7 +396,6 @@
 
 /* Loading Dots */
 @keyframes loading-dots {
-
   0%,
   80%,
   100% {
@@ -438,7 +435,6 @@
    Mobile Performance Optimization
    ============================================ */
 @media (max-width: 768px) {
-
   /* Disable expensive animations on mobile for performance */
   /* Decorative elements can be hidden */
   .c-cyber-grid::before,
@@ -499,7 +495,6 @@
    Respect Reduced Motion Preferences
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -508,55 +503,4 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ============================================
-   GLOBAL PERFORMANCE FIX - Disable Heavy Effects
-   ============================================ */
-
-/* Disable all backdrop-filter (very GPU intensive) */
-.c-glass-card,
-.l-proto__feature,
-.l-hero__float,
-.l-navbar--scrolled,
-[class*="glass"] {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-/* Disable all infinite animations */
-.c-cyber-grid::before,
-.c-matrix-bg,
-.c-scan-line,
-.c-data-stream,
-.c-holo-shimmer,
-.c-circuit-glow,
-.animate-pulse,
-[class*="pulse"],
-[class*="shimmer"],
-[class*="glow"],
-[class*="float"] {
-  animation: none !important;
-}
-
-/* Simplify backgrounds */
-.c-glass-card {
-  background: rgba(255, 255, 255, 0.98) !important;
-}
-
-[data-theme="dark"] .c-glass-card {
-  background: rgba(30, 41, 59, 0.98) !important;
-}
-
-.l-navbar--scrolled {
-  background: rgba(255, 255, 255, 0.95) !important;
-}
-
-[data-theme="dark"] .l-navbar--scrolled {
-  background: rgba(15, 29, 51, 0.95) !important;
-}
-
-/* Faster transitions globally */
-* {
-  transition-duration: 0.15s !important;
 }
