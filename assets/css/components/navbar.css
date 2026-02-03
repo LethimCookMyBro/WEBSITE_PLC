@@ -89,7 +89,7 @@
   transition:
     box-shadow 0.4s ease,
     transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform, box-shadow;
+  /* will-change removed to prevent rendering glitches */
 }
 
 .l-navbar__logo:hover .l-navbar__logo-icon {
@@ -102,17 +102,16 @@
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
-  /* FORCE FIX: Prevent text from disappearing during sibling animation */
+  /* SAFE FIX: Remove 3D transforms which cause clipping on Windows */
   position: relative;
   z-index: 5;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: opacity, transform;
+  display: inline-block; /* Ensure it holds its own box */
+  flex-shrink: 0; /* Never let the logo text shrink */
+  line-height: 1.2;
 }
 
 .l-navbar__logo:hover .l-navbar__logo-text {
-  opacity: 1 !important;
-  visibility: visible !important;
+  /* No forced opacity needed if we don't break the layer */
 }
 
 /* Nav Links */
