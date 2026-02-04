@@ -170,10 +170,13 @@
 .c-glitch-text {
   position: relative;
   display: inline-block;
+  transition: text-shadow 0.2s ease;
 }
 
 .c-glitch-text:hover {
-  animation: glitch 0.3s ease-in-out;
+  text-shadow:
+    2px 0 var(--blue-500),
+    -2px 0 #8b5cf6;
 }
 
 /* Typing Cursor Effect */

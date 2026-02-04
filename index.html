@@ -1,37 +1,45 @@
 <!doctype html>
 <html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- SEO & Accessibility -->
 
-  <!-- SEO & Accessibility -->
+    <title>
+      PANYA - Intelligent RAG-Based Technical Support for PLC Systems
+    </title>
+    <meta
+      name="description"
+      content="PANYA reduces PLC downtime with fast, cited troubleshooting answers. RAG-powered technical support assistant for industrial automation."
+    />
 
-  <title>
-    PANYA - Intelligent RAG-Based Technical Support for PLC Systems
-  </title>
-  <meta name="description"
-    content="PANYA reduces PLC downtime with fast, cited troubleshooting answers. RAG-powered technical support assistant for industrial automation." />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet" />
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/main.css?v=fixed" />
+  </head>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="assets/css/main.css" />
-</head>
-
-<body>
-  <!-- Loading Screen with Skeleton Animation -->
-  <div id="loading-screen" style="
+  <body>
+    <!-- Loading Screen with Skeleton Animation -->
+    <div
+      id="loading-screen"
+      style="
         position: fixed;
         top: 0;
         left: 0;
@@ -42,103 +50,117 @@
         align-items: center;
         justify-content: center;
         z-index: 9999;
-        font-family: 'Inter', sans-serif;
-      ">
-    <div style="text-align: center">
-      <!-- Logo Animation -->
-      <div style="
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 24px;
-        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        animation: pulse-glow 1.5s ease-in-out infinite;
-      ">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
-          <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-        </svg>
+        font-family: &quot;Inter&quot;, sans-serif;
+      "
+    >
+      <div style="text-align: center">
+        <!-- Logo Animation -->
+        <div
+          style="
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-glow 1.5s ease-in-out infinite;
+          "
+        >
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+            />
+          </svg>
+        </div>
+
+        <!-- Brand -->
+        <div
+          style="
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+          "
+        >
+          PANYA
+        </div>
+        <div style="color: #94a3b8; font-size: 14px; margin-bottom: 32px">
+          Intelligent Technical Support
+        </div>
+
+        <!-- Loading Bar -->
+        <div
+          style="
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 auto;
+          "
+        >
+          <div
+            style="
+              width: 40%;
+              height: 100%;
+              background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+              border-radius: 4px;
+              animation: loading-bar 1.5s ease-in-out infinite;
+            "
+          ></div>
+        </div>
       </div>
 
-      <!-- Brand -->
-      <div style="color: white; font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px;">
-        PANYA
-      </div>
-      <div style="color: #94a3b8; font-size: 14px; margin-bottom: 32px;">
-        Intelligent Technical Support
-      </div>
+      <style>
+        @keyframes pulse-glow {
+          0%,
+          100% {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+            transform: scale(1);
+          }
 
-      <!-- Loading Bar -->
-      <div style="
-        width: 200px;
-        height: 4px;
-        background: rgba(255,255,255,0.1);
-        border-radius: 4px;
-        overflow: hidden;
-        margin: 0 auto;
-      ">
-        <div style="
-          width: 40%;
-          height: 100%;
-          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-          border-radius: 4px;
-          animation: loading-bar 1.5s ease-in-out infinite;
-        "></div>
-      </div>
+          50% {
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
+            transform: scale(1.05);
+          }
+        }
+
+        @keyframes loading-bar {
+          0% {
+            transform: translateX(-100%);
+          }
+
+          50% {
+            transform: translateX(150%);
+          }
+
+          100% {
+            transform: translateX(350%);
+          }
+        }
+      </style>
     </div>
 
-    <style>
-      @keyframes pulse-glow {
+    <!-- Component Containers -->
+    <div id="navbar-container"></div>
+    <div id="hero-container"></div>
+    <div id="problem-container"></div>
+    <div id="product-container"></div>
+    <div id="how-it-works-container"></div>
+    <div id="prototype-container"></div>
 
-        0%,
-        100% {
-          box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-          transform: scale(1);
-        }
+    <div id="pricing-container"></div>
+    <div id="faq-container"></div>
+    <div id="contact-container"></div>
+    <div id="footer-container"></div>
 
-        50% {
-          box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
-          transform: scale(1.05);
-        }
-      }
-
-      @keyframes loading-bar {
-        0% {
-          transform: translateX(-100%);
-        }
-
-        50% {
-          transform: translateX(150%);
-        }
-
-        100% {
-          transform: translateX(350%);
-        }
-      }
-    </style>
-  </div>
-
-  <!-- Component Containers -->
-  <div id="navbar-container"></div>
-  <div id="hero-container"></div>
-  <div id="problem-container"></div>
-  <div id="product-container"></div>
-  <div id="how-it-works-container"></div>
-  <div id="prototype-container"></div>
-
-  <div id="pricing-container"></div>
-  <div id="faq-container"></div>
-  <div id="contact-container"></div>
-  <div id="footer-container"></div>
-
-  <!-- Scripts -->
-  <script src="assets/js/component-loader.js"></script>
-  <script src="assets/particles.js"></script>
-  <script src="assets/js/modules/TypingDemo.js"></script>
-  <script type="module" src="assets/app.js"></script>
-</body>
-
+    <!-- Scripts -->
+    <script src="assets/js/component-loader.js"></script>
+    <script src="assets/particles.js"></script>
+    <script src="assets/js/modules/TypingDemo.js"></script>
+    <script type="module" src="assets/app.js"></script>
+  </body>
 </html>

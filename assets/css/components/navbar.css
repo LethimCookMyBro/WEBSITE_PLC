@@ -70,6 +70,9 @@
   gap: var(--space-3);
   text-decoration: none; /* Ensure no underlying underlines */
   position: relative; /* Establish stacking context if needed, but keep it clean */
+  overflow: visible; /* Ensure nothing gets clipped */
+  margin: 0;
+  padding: 0;
 }
 
 /* Parent hover effect removed */
