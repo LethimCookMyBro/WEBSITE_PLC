@@ -274,13 +274,14 @@
 
   .l-navbar__actions > .c-lang-toggle {
     display: flex !important;
-    transform: scale(0.85);
+    min-height: 36px;
+    transform: none;
   }
 
   .l-navbar__actions > .c-lang-toggle .c-lang-toggle__btn {
     padding: var(--space-1) var(--space-3);
     font-size: var(--text-xs);
-    min-width: 36px;
+    min-width: 34px;
   }
 
   .l-navbar__menu-btn {
@@ -568,13 +569,13 @@
 
   .l-navbar__actions > .c-lang-toggle {
     display: flex !important;
-    transform: scale(0.78);
-    transform-origin: center;
+    min-height: 34px;
+    transform: none;
   }
 
   .l-navbar__actions > .c-lang-toggle .c-lang-toggle__btn {
-    min-width: 32px;
-    padding: 4px 10px;
+    min-width: 30px;
+    padding: 4px 9px;
     font-size: 0.75rem;
   }
 
