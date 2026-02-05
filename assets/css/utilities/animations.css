@@ -1,176 +1,157 @@
 /* ============================================
-   Animation Utilities
+   Motion Utilities (Clean Animation System)
    ============================================ */
 
-/* Fade In Up */
-@keyframes fadeInUp {
+:root {
+  --motion-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============================================
+   Global Reveal System
+   ============================================ */
+
+.js-reveal {
+  --reveal-x: 0px;
+  --reveal-y: 24px;
+  --reveal-scale: 1;
+  opacity: 0;
+  transform: translate3d(var(--reveal-x), var(--reveal-y), 0)
+    scale(var(--reveal-scale));
+  transition:
+    opacity 520ms var(--motion-standard),
+    transform 680ms var(--motion-emphasized);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js-reveal[data-reveal-effect="zoom"] {
+  --reveal-y: 16px;
+  --reveal-scale: 0.96;
+}
+
+.js-reveal[data-reveal-effect="slide"] {
+  --reveal-x: -20px;
+  --reveal-y: 0px;
+}
+
+.js-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* ============================================
+   Navbar Entrance (Top Section In Screenshot)
+   ============================================ */
+
+body:not(.is-app-ready) .l-navbar__container {
+  opacity: 0;
+  transform: translateY(-14px) scale(0.985);
+}
+
+body.is-app-ready .l-navbar__container {
+  animation: navbar-container-enter 720ms var(--motion-emphasized) forwards;
+}
+
+body:not(.is-app-ready) .l-navbar__links .l-navbar__link,
+body:not(.is-app-ready) .l-navbar__actions > * {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+body.is-app-ready .l-navbar__links .l-navbar__link,
+body.is-app-ready .l-navbar__actions > * {
+  animation: navbar-item-enter 560ms var(--motion-emphasized)
+    var(--nav-enter-delay, 0ms) both;
+}
+
+@keyframes navbar-container-enter {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(-14px) scale(0.985);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
+@keyframes navbar-item-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease forwards;
-}
+/* ============================================
+   Decorative Effects
+   ============================================ */
 
-/* Hero Entrance Animations */
-@keyframes heroSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(60px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes heroFadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-/* Floating Animation - Combined version */
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translateY(0) rotate(0deg);
   }
-
   50% {
-    transform: translateY(-10px) rotate(5deg);
+    transform: translateY(-10px) rotate(4deg);
   }
 }
 
-/* Shimmer Effect */
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
   }
-
   100% {
     background-position: 200% 0;
   }
 }
 
-/* Pulse Animation */
-.animate-pulse {
-  animation: pulse 2s infinite;
+@keyframes badgePulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.45);
+  }
 }
 
-/* Gradient Border Animation */
 @keyframes gradientBorder {
   0%,
   100% {
     background-position: 0% 50%;
   }
-
   50% {
     background-position: 100% 50%;
   }
 }
 
-/* Badge Pulse Animation */
-@keyframes badgePulse {
+.animate-pulse {
+  animation: pulse 2.2s infinite;
+}
+
+@keyframes pulse {
   0%,
   100% {
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.35);
   }
-
   50% {
-    box-shadow: 0 4px 25px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
   }
 }
 
-/* FAQ Content Fade In */
-@keyframes fadeInContent {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Stagger Animation Delays */
-.stagger-1 {
-  animation-delay: 0.1s;
-}
-
-.stagger-2 {
-  animation-delay: 0.2s;
-}
-
-.stagger-3 {
-  animation-delay: 0.3s;
-}
-
-.stagger-4 {
-  animation-delay: 0.4s;
-}
-
-.stagger-5 {
-  animation-delay: 0.5s;
-}
-
-/* ===== TECH ANIMATIONS ===== */
-
-/* Glitch Text Effect */
-@keyframes glitch {
-  0%,
-  100% {
-    transform: translate(0);
-    text-shadow: none;
-  }
-
-  20% {
-    transform: translate(-2px, 2px);
-    text-shadow:
-      2px 0 var(--blue-500),
-      -2px 0 #8b5cf6;
-  }
-
-  40% {
-    transform: translate(2px, -2px);
-    text-shadow:
-      -2px 0 var(--blue-500),
-      2px 0 #8b5cf6;
-  }
-
-  60% {
-    transform: translate(-1px, 1px);
-    text-shadow:
-      1px 0 var(--blue-500),
-      -1px 0 #8b5cf6;
-  }
-
-  80% {
-    transform: translate(1px, -1px);
-    text-shadow:
-      -1px 0 var(--blue-500),
-      1px 0 #8b5cf6;
-  }
-}
+/* ============================================
+   Tech-style Effects
+   ============================================ */
 
 .c-glitch-text {
   position: relative;
   display: inline-block;
-  transition: text-shadow 0.2s ease;
+  transition: text-shadow 200ms ease;
 }
 
 .c-glitch-text:hover {
@@ -179,13 +160,11 @@
     -2px 0 #8b5cf6;
 }
 
-/* Typing Cursor Effect */
 @keyframes blink-cursor {
   0%,
   50% {
     border-color: var(--blue-500);
   }
-
   51%,
   100% {
     border-color: transparent;
@@ -202,12 +181,10 @@
   animation: blink-cursor 1s step-end infinite;
 }
 
-/* Scan Line Effect */
 @keyframes scan-line {
   0% {
     transform: translateY(-100%);
   }
-
   100% {
     transform: translateY(100vh);
   }
@@ -220,26 +197,20 @@
   right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--blue-400), transparent);
-  opacity: 0.5;
+  opacity: 0.45;
   animation: scan-line 3s linear infinite;
   pointer-events: none;
 }
 
-/* Data Stream Effect */
 @keyframes data-stream {
   0% {
     transform: translateY(-100%);
     opacity: 0;
   }
-
-  10% {
-    opacity: 1;
-  }
-
+  10%,
   90% {
     opacity: 1;
   }
-
   100% {
     transform: translateY(100%);
     opacity: 0;
@@ -265,54 +236,46 @@
   left: 10%;
   animation-delay: 0s;
 }
-
 .c-data-stream:nth-child(2) {
   left: 30%;
   animation-delay: 0.5s;
 }
-
 .c-data-stream:nth-child(3) {
   left: 50%;
   animation-delay: 1s;
 }
-
 .c-data-stream:nth-child(4) {
   left: 70%;
   animation-delay: 1.5s;
 }
-
 .c-data-stream:nth-child(5) {
   left: 90%;
   animation-delay: 2s;
 }
 
-/* Circuit Glow Animation */
 @keyframes circuit-glow {
   0%,
   100% {
     box-shadow:
-      0 0 5px var(--blue-500),
-      inset 0 0 5px rgba(59, 130, 246, 0.1);
+      0 0 6px var(--blue-500),
+      inset 0 0 6px rgba(59, 130, 246, 0.12);
   }
-
   50% {
     box-shadow:
-      0 0 20px var(--blue-500),
-      0 0 40px rgba(59, 130, 246, 0.3),
-      inset 0 0 10px rgba(59, 130, 246, 0.2);
+      0 0 18px var(--blue-500),
+      0 0 32px rgba(59, 130, 246, 0.26),
+      inset 0 0 10px rgba(59, 130, 246, 0.18);
   }
 }
 
 .c-circuit-glow {
-  animation: circuit-glow 3s ease-in-out infinite;
+  animation: circuit-glow 3.2s ease-in-out infinite;
 }
 
-/* Cyber Grid Background */
 @keyframes cyber-grid {
   0% {
     background-position: 0 0;
   }
-
   100% {
     background-position: 60px 60px;
   }
@@ -335,12 +298,10 @@
   pointer-events: none;
 }
 
-/* Holographic Shimmer */
 @keyframes holo-shimmer {
   0% {
     background-position: -200% 0;
   }
-
   100% {
     background-position: 200% 0;
   }
@@ -359,21 +320,15 @@
   animation: holo-shimmer 3s ease-in-out infinite;
 }
 
-/* Matrix Rain Effect (subtle) */
 @keyframes matrix-fall {
   0% {
     transform: translateY(-100%);
     opacity: 0;
   }
-
-  20% {
-    opacity: 0.3;
-  }
-
+  20%,
   80% {
     opacity: 0.3;
   }
-
   100% {
     transform: translateY(300%);
     opacity: 0;
@@ -397,7 +352,6 @@
   animation: matrix-fall 10s linear infinite;
 }
 
-/* Loading Dots */
 @keyframes loading-dots {
   0%,
   80%,
@@ -405,7 +359,6 @@
     transform: scale(0);
     opacity: 0.5;
   }
-
   40% {
     transform: scale(1);
     opacity: 1;
@@ -425,85 +378,66 @@
 .c-loading-dots span:nth-child(1) {
   animation-delay: -0.32s;
 }
-
 .c-loading-dots span:nth-child(2) {
   animation-delay: -0.16s;
 }
-
 .c-loading-dots span:nth-child(3) {
   animation-delay: 0s;
 }
 
 /* ============================================
-   Mobile Performance Optimization
+   Mobile Motion Tuning
    ============================================ */
+
 @media (max-width: 768px) {
-  /* Disable expensive animations on mobile for performance */
-  /* Decorative elements can be hidden */
   .c-cyber-grid::before,
   .c-matrix-bg,
-  .c-scan-line,
   .c-data-stream {
     display: none !important;
-    animation: none !important;
   }
 
-  /* Content wrappers - DO NOT HIDE, just disable animation */
-  .c-holo-shimmer,
-  .c-circuit-glow {
-    animation: none !important;
-    background-size: cover !important;
-    /* Reset specific animation props if needed */
-    box-shadow: none !important;
+  .c-circuit-glow,
+  .animate-pulse {
+    animation-duration: 4.5s;
   }
 
-  /* Disable backdrop-filter on mobile - very expensive on mobile GPUs */
-  .c-glass-card,
-  .l-proto__feature,
-  .l-hero__float {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+  .c-scan-line {
+    animation-duration: 5s;
+    opacity: 0.28;
   }
 
-  /* Simpler mobile backgrounds for glass cards */
-  .c-glass-card {
-    background: rgba(255, 255, 255, 0.95) !important;
-  }
-
-  [data-theme="dark"] .c-glass-card {
-    background: rgba(30, 41, 59, 0.95) !important;
-  }
-
-  /* Reduce or remove float animations */
-  .l-hero__float,
-  [class*="float"] {
-    animation: none !important;
-  }
-
-  /* Disable all infinite animations on mobile */
-  .animate-pulse,
-  [class*="pulse"],
-  [class*="shimmer"],
-  [class*="glow"] {
-    animation: none !important;
-  }
-
-  /* Faster transitions */
-  * {
-    transition-duration: 0.15s !important;
+  .js-reveal {
+    --reveal-y: 16px;
+    transition-duration: 420ms, 520ms;
   }
 }
 
 /* ============================================
-   Respect Reduced Motion Preferences
+   Accessibility: Reduced Motion
    ============================================ */
+
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  .js-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .c-scan-line,
+  .c-data-stream,
+  .c-circuit-glow,
+  .c-cyber-grid::before,
+  .c-holo-shimmer,
+  .c-matrix-bg span,
+  .animate-pulse,
+  .c-loading-dots span {
+    animation: none !important;
+  }
+
+  body:not(.is-app-ready) .l-navbar__container,
+  body:not(.is-app-ready) .l-navbar__links .l-navbar__link,
+  body:not(.is-app-ready) .l-navbar__actions > * {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

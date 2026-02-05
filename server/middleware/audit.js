@@ -17,6 +17,15 @@ export function logAudit(
   req = null,
 ) {
   try {
+    const normalizedDetails =
+      details && typeof details === "object"
+        ? { ...details, requestId: req?.requestId }
+        : details
+          ? { detail: details, requestId: req?.requestId }
+          : req?.requestId
+            ? { requestId: req.requestId }
+            : null;
+
     run(
       `
       INSERT INTO audit_logs (id, user_id, action, resource, details, ip_address, user_agent)
@@ -27,9 +36,9 @@ export function logAudit(
         userId,
         action,
         resource,
-        details ? JSON.stringify(details) : null,
+        normalizedDetails ? JSON.stringify(normalizedDetails) : null,
         req ? getClientIP(req) : null,
-        req ? req.headers["user-agent"] : null,
+        req ? String(req.headers["user-agent"] || "").slice(0, 500) : null,
       ],
     );
   } catch (error) {

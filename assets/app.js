@@ -8,7 +8,7 @@ import { AppState } from "./js/modules/AppState.js";
 import { I18n } from "./js/modules/I18n.js";
 import { UI } from "./js/modules/UI.js";
 import { FormValidator } from "./js/modules/FormValidator.js";
-import { ScrollHandler } from "./js/modules/Animators.js";
+import { ScrollHandler, Animator } from "./js/modules/Animators.js";
 import { Toast } from "./js/modules/Toast.js";
 
 // ============================================
@@ -175,6 +175,7 @@ function init() {
 
   // Initialize modules
   ScrollHandler.init();
+  Animator.init();
 
   // Bind events
   bindEvents();

@@ -12,7 +12,6 @@ import { config } from "dotenv";
 import {
   initDatabase,
   seedDatabase,
-  query,
   queryOne,
   run,
   saveDatabase,
@@ -24,8 +23,16 @@ import authRoutes from "./routes/auth.js";
 import leadsRoutes from "./routes/leads.js";
 
 // Security Middleware
-import { securityHeaders, sanitizeBody } from "./middleware/security.js";
-import { apiLimiter } from "./middleware/rateLimit.js";
+import { authenticate } from "./middleware/auth.js";
+import {
+  attachRequestMetadata,
+  noStore,
+  rejectSuspiciousPayload,
+  sanitizeBody,
+  sanitizeQuery,
+  securityHeaders,
+} from "./middleware/security.js";
+import { apiLimiter, statsLimiter } from "./middleware/rateLimit.js";
 
 config();
 
@@ -33,17 +40,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.set("trust proxy", 1);
+app.disable("x-powered-by");
+app.set("query parser", "simple");
+app.set("trust proxy", process.env.TRUST_PROXY || 1);
 
-// ==========================================
-// STATIC FILES - Serve Frontend (First priority)
-// ==========================================
-
-// Main website (root folder)
-app.use(express.static(path.join(__dirname, "..")));
-
-// Admin dashboard
-app.use("/admin", express.static(path.join(__dirname, "..", "admin")));
+const staticOptions = {
+  dotfiles: "deny",
+  etag: true,
+  maxAge: process.env.NODE_ENV === "production" ? "1h" : 0,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith(".html")) {
+      res.setHeader("Cache-Control", "no-cache");
+    }
+  },
+};
 
 // ==========================================
 // SECURITY MIDDLEWARE
@@ -59,6 +69,7 @@ app.use(
           "'self'",
           "'unsafe-inline'",
           "https://cdnjs.cloudflare.com",
+          "https://cdn.jsdelivr.net",
         ],
         styleSrc: [
           "'self'",
@@ -73,18 +84,24 @@ app.use(
         ],
         imgSrc: ["'self'", "data:", "https:"],
         connectSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        frameAncestors: ["'none'"],
       },
     },
     crossOriginEmbedderPolicy: false, // Required for fonts
+    crossOriginResourcePolicy: { policy: "same-origin" },
   }),
 );
 
 // Custom security headers
 app.use(securityHeaders);
+app.use(attachRequestMetadata);
 
 // CORS - Configured for production
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",")
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
   : ["http://localhost:3000", "http://127.0.0.1:3000"];
 
 app.use(
@@ -108,14 +125,39 @@ app.use(
   }),
 );
 
-// Body parsing with size limit
-app.use(express.json({ limit: "10kb" }));
+// Body parsing with strict size limits
+app.use(
+  express.json({
+    limit: process.env.JSON_BODY_LIMIT || "16kb",
+    strict: true,
+  }),
+);
+app.use(
+  express.urlencoded({
+    extended: false,
+    limit: process.env.URLENCODED_BODY_LIMIT || "16kb",
+  }),
+);
+
+// Block suspicious payload structures before sanitization
+app.use(rejectSuspiciousPayload);
+
+// Sanitize inbound request data
+app.use(sanitizeQuery);
 
 // Sanitize all incoming request bodies
 app.use(sanitizeBody);
 
 // Rate limiting for API routes
 app.use("/api", apiLimiter);
+app.use("/api/auth", noStore);
+
+// ==========================================
+// STATIC FILES - Serve Frontend
+// ==========================================
+
+app.use(express.static(path.join(__dirname, ".."), staticOptions));
+app.use("/admin", express.static(path.join(__dirname, "..", "admin"), staticOptions));
 
 // ==========================================
 // API ROUTES
@@ -123,11 +165,15 @@ app.use("/api", apiLimiter);
 
 // Health check
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    requestId: req.requestId,
+  });
 });
 
 // Dashboard stats
-app.get("/api/dashboard/stats", (req, res) => {
+app.get("/api/dashboard/stats", statsLimiter, authenticate, (req, res) => {
   try {
     const today = new Date().toISOString().split("T")[0];
     const queriesResult = queryOne(
@@ -160,6 +206,7 @@ app.get("/api/dashboard/stats", (req, res) => {
       resolvedRate: resolvedRate || 94,
       newLeads: leadsResult.count || 0,
       avgTime: ((avgTimeResult.avg || 1200) / 1000).toFixed(1),
+      requestId: req.requestId,
     });
   } catch (error) {
     console.error("Stats error:", error);
@@ -168,6 +215,7 @@ app.get("/api/dashboard/stats", (req, res) => {
       resolvedRate: 94,
       newLeads: 12,
       avgTime: 1.2,
+      requestId: req.requestId,
     });
   }
 });
@@ -202,6 +250,7 @@ app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
   res.status(500).json({
     error: "Server error",
+    requestId: req.requestId,
     message: process.env.NODE_ENV === "development" ? err.message : undefined,
     stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });

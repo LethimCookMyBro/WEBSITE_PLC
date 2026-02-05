@@ -1,29 +1,70 @@
 import { AppState } from "./AppState.js";
 import { UI } from "./UI.js";
 
+const prefersReducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function rafThrottle(callback) {
+  let frameId = null;
+  let pendingArgs = null;
+
+  return (...args) => {
+    pendingArgs = args;
+    if (frameId) return;
+
+    frameId = window.requestAnimationFrame(() => {
+      frameId = null;
+      callback(...pendingArgs);
+    });
+  };
+}
+
 // ============================================
 // SCROLL MODULE
 // ============================================
 export const ScrollHandler = {
   heroBackground: null,
+  onScroll: null,
+  heroParallaxSpeed: 0.22,
+  heroParallaxMaxOffset: 120,
+  navbarScrollThreshold: 36,
 
   init() {
+    if (this.onScroll) return;
+
     this.heroBackground = document.querySelector(".l-hero__bg-image");
-    window.addEventListener("scroll", this.handleScroll.bind(this), {
+    this.onScroll = rafThrottle(() => this.handleScroll());
+
+    window.addEventListener("scroll", this.onScroll, {
       passive: true,
     });
-    this.handleScroll();
+    window.addEventListener("resize", this.onScroll, {
+      passive: true,
+    });
+    this.onScroll();
   },
 
   handleScroll() {
-    const scrollY = window.scrollY;
-    const scrolled = scrollY > 50;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const scrolled = scrollY > this.navbarScrollThreshold;
     AppState.setScrolled(scrolled);
 
-    // Parallax effect for hero background
-    if (this.heroBackground && scrollY < window.innerHeight) {
-      const parallaxSpeed = 0.4;
-      this.heroBackground.style.transform = `translateY(${scrollY * parallaxSpeed}px)`;
+    if (!this.heroBackground || prefersReducedMotion()) {
+      return;
+    }
+
+    const visibleRange = window.innerHeight * 0.9;
+    if (scrollY <= visibleRange) {
+      const offset = clamp(
+        scrollY * this.heroParallaxSpeed,
+        0,
+        this.heroParallaxMaxOffset,
+      );
+      this.heroBackground.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
     }
   },
 
@@ -47,7 +88,7 @@ export const ScrollHandler = {
 
     window.scrollTo({
       top: targetPosition,
-      behavior: "smooth",
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
     });
   },
 };
@@ -56,63 +97,117 @@ export const ScrollHandler = {
 // ANIMATION MODULE
 // ============================================
 export const Animator = {
+  observer: null,
+  revealItems: [],
+  isInitialized: false,
+  revealGroups: [
+    { selector: ".l-hero__badges", effect: "up", baseDelay: 80 },
+    { selector: ".l-hero__title", effect: "up", baseDelay: 120 },
+    { selector: ".l-hero__subtitle", effect: "up", baseDelay: 170 },
+    { selector: ".l-hero__ctas", effect: "up", baseDelay: 220 },
+    { selector: ".l-hero__visual", effect: "zoom", baseDelay: 180 },
+    { selector: ".c-section-header", effect: "up", stagger: 40 },
+    { selector: ".l-problem__card", effect: "up", stagger: 90 },
+    { selector: ".l-features__card", effect: "up", stagger: 70 },
+    { selector: ".l-why", effect: "up", baseDelay: 60 },
+    { selector: ".l-timeline__item", effect: "slide", stagger: 70 },
+    { selector: ".l-mockup", effect: "zoom", stagger: 80 },
+    { selector: ".l-proto__feature", effect: "up", stagger: 60 },
+    { selector: ".l-pricing__card", effect: "up", stagger: 90 },
+    { selector: ".l-faq__item", effect: "up", stagger: 60 },
+    { selector: ".l-contact__form-wrapper", effect: "up", baseDelay: 30 },
+    { selector: ".l-contact__card", effect: "up", stagger: 70 },
+    { selector: ".l-footer__grid > *", effect: "up", stagger: 60 },
+    { selector: ".l-footer__bottom", effect: "up", baseDelay: 80 },
+  ],
+
   init() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (this.isInitialized) return;
+    this.isInitialized = true;
+
+    this.bootstrapNavbarAnimation();
+    this.collectRevealItems();
+
+    if (prefersReducedMotion()) {
       this.makeVisibleImmediately();
       return;
     }
 
     this.observeElements();
+    window.setTimeout(() => this.forceRevealFallback(), 2600);
+  },
+
+  bootstrapNavbarAnimation() {
+    const navLinks = document.querySelectorAll(".l-navbar__links .l-navbar__link");
+    const navActions = document.querySelectorAll(".l-navbar__actions > *");
+
+    navLinks.forEach((link, index) => {
+      link.style.setProperty("--nav-enter-delay", `${140 + index * 40}ms`);
+    });
+
+    navActions.forEach((action, index) => {
+      action.style.setProperty("--nav-enter-delay", `${420 + index * 70}ms`);
+    });
+
+    window.requestAnimationFrame(() => {
+      document.body.classList.add("is-app-ready");
+    });
+  },
+
+  collectRevealItems() {
+    this.revealItems = [];
+
+    this.revealGroups.forEach((group) => {
+      const nodes = document.querySelectorAll(group.selector);
+      if (!nodes.length) return;
+
+      nodes.forEach((node, index) => {
+        if (node.dataset.revealBound === "true") return;
+
+        const delayMs = (group.baseDelay || 0) + index * (group.stagger || 0);
+        node.dataset.revealBound = "true";
+        node.dataset.revealEffect = group.effect || "up";
+        node.classList.add("js-reveal");
+        node.style.setProperty("--reveal-delay", `${delayMs}ms`);
+        this.revealItems.push(node);
+      });
+    });
   },
 
   makeVisibleImmediately() {
-    document
-      .querySelectorAll(
-        ".c-glass-card, .l-timeline__item, .l-metric__card, .l-pricing__card, .l-faq__item, .l-hero__content, .l-hero__visual",
-      )
-      .forEach((el) => {
-        el.style.opacity = "1";
-        el.style.transform = "none";
-      });
+    document.body.classList.add("is-app-ready");
+    this.revealItems.forEach((item) => item.classList.add("is-visible"));
   },
 
   observeElements() {
-    const elements = document.querySelectorAll(
-      ".c-glass-card, .l-timeline__item, .l-metric__card, .l-pricing__card, .l-faq__item, .l-hero__content, .l-hero__visual",
-    );
+    if (!this.revealItems.length) {
+      return;
+    }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
+    this.observer = new IntersectionObserver(
+      (entries, observer) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Add a small random delay for natural feel if multiple items appear at once
-            // But NOT based on global index to avoid huge delays
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-            observer.unobserve(entry.target);
-          }
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.1, rootMargin: "50px" }, // Increased rootMargin to trigger slightly earlier
+      {
+        threshold: 0.18,
+        rootMargin: "0px 0px -10% 0px",
+      },
     );
 
-    elements.forEach((el) => {
-      el.style.opacity = "0";
-      el.style.transform = "translateY(20px)";
-      // Fixed duration, no variable delay
-      el.style.transition = "opacity 0.6s ease-out, transform 0.6s ease-out";
-      observer.observe(el);
-    });
+    this.revealItems.forEach((item) => this.observer.observe(item));
+  },
 
-    // Safety fallback: Ensure everything is visible after 2s
-    // fixes blank page issues if Observer fails or elements are stuck
-    setTimeout(() => {
-      elements.forEach((el) => {
-        if (getComputedStyle(el).opacity === "0") {
-          el.style.opacity = "1";
-          el.style.transform = "none";
-        }
-      });
-    }, 2000);
+  forceRevealFallback() {
+    if (!this.revealItems.length) return;
+
+    this.revealItems.forEach((item) => {
+      if (!item.classList.contains("is-visible")) {
+        item.classList.add("is-visible");
+      }
+    });
   },
 };

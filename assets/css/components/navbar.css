@@ -22,6 +22,7 @@
 
 /* Floating Navbar on Scroll */
 .l-navbar--scrolled {
+  position: fixed;
   left: 0;
   right: 0;
   margin-left: auto;
@@ -43,6 +44,25 @@
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
+.l-navbar--scrolled::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(59, 130, 246, 0.08) 28%,
+    rgba(255, 255, 255, 0.22) 45%,
+    rgba(59, 130, 246, 0.08) 62%,
+    transparent 100%
+  );
+  background-size: 180% 100%;
+  animation: navbarSheen 9s linear infinite;
+  opacity: 0.75;
+}
+
 [data-theme="dark"] .l-navbar--scrolled {
   background: rgba(15, 29, 51, 0.92);
   box-shadow:
@@ -61,6 +81,8 @@
   margin: 0 auto;
   padding: 0 var(--space-6);
   gap: var(--space-4);
+  position: relative;
+  z-index: 1;
 }
 
 /* Logo */
@@ -134,7 +156,10 @@
   font-weight: 500;
   color: var(--text-secondary);
   border-radius: var(--radius-md);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    color 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
@@ -379,7 +404,10 @@
   color: var(--text-secondary);
   text-decoration: none;
   border-radius: var(--radius-lg);
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .l-navbar__mobile-link i {
@@ -438,6 +466,15 @@
   font-weight: 600;
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+@keyframes navbarSheen {
+  0% {
+    background-position: 180% 50%;
+  }
+  100% {
+    background-position: -40% 50%;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
@@ -514,8 +551,39 @@
 }
 
 @media (max-width: 640px) {
-  .l-navbar__actions > .c-theme-toggle,
+  .l-navbar__container {
+    padding: 0 var(--space-3);
+  }
+
+  .l-navbar__actions {
+    gap: var(--space-2);
+  }
+
+  .l-navbar__actions > .c-theme-toggle {
+    display: flex !important;
+    width: 34px;
+    height: 34px;
+    font-size: var(--text-sm);
+  }
+
   .l-navbar__actions > .c-lang-toggle {
-    display: none !important;
+    display: flex !important;
+    transform: scale(0.78);
+    transform-origin: center;
+  }
+
+  .l-navbar__actions > .c-lang-toggle .c-lang-toggle__btn {
+    min-width: 32px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+
+  .l-navbar__menu-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .l-navbar__logo-text {
+    font-size: var(--text-lg);
   }
 }

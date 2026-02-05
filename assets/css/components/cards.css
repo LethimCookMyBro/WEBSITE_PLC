@@ -14,7 +14,8 @@
   overflow: hidden;
   transition:
     transform var(--transition-base),
-    box-shadow var(--transition-base);
+    box-shadow var(--transition-base),
+    border-color var(--transition-base);
 }
 
 .c-glass-card::before {
@@ -41,10 +42,11 @@
 }
 
 .c-glass-card:hover {
-  transform: translateY(-6px) scale(1.01);
+  transform: translateY(-4px) scale(1.005);
   box-shadow:
     var(--glass-shadow-lg),
     0 0 40px rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.22);
 }
 
 /* Sheen Effect */
@@ -132,5 +134,12 @@
   /* Disable expensive sheen animation on mobile */
   .c-glass-card::after {
     display: none;
+  }
+}
+
+@media (hover: none) {
+  .c-glass-card:hover {
+    transform: none;
+    box-shadow: var(--glass-shadow);
   }
 }

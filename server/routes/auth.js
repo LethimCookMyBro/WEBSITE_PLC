@@ -7,15 +7,32 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { query, queryOne, run } from "../config/database.js";
-import { authenticate, JWT_SECRET } from "../middleware/auth.js";
+import { queryOne, run } from "../config/database.js";
+import {
+  authenticate,
+  hashToken,
+  JWT_AUDIENCE,
+  JWT_ISSUER,
+  JWT_SECRET,
+} from "../middleware/auth.js";
 import { logAudit } from "../middleware/audit.js";
 import { authLimiter } from "../middleware/rateLimit.js";
+import { isValidEmail, sanitizeString } from "../middleware/security.js";
 
 const router = Router();
 
 // Token expiry (7 days)
 const TOKEN_EXPIRY = "7d";
+const PASSWORD_MIN_LENGTH = 6;
+
+function createJwtToken(user) {
+  return jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, {
+    expiresIn: TOKEN_EXPIRY,
+    issuer: JWT_ISSUER,
+    audience: JWT_AUDIENCE,
+    algorithm: "HS256",
+  });
+}
 
 /**
  * POST /api/auth/login
@@ -23,10 +40,19 @@ const TOKEN_EXPIRY = "7d";
  */
 router.post("/login", authLimiter, async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = sanitizeString(req.body?.email || "").toLowerCase();
+    const password = typeof req.body?.password === "string" ? req.body.password : "";
 
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password required" });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     // Find user
@@ -35,7 +61,7 @@ router.post("/login", authLimiter, async (req, res) => {
       SELECT id, email, password_hash, name, role, tenant_id, avatar, is_active
       FROM users WHERE email = ?
     `,
-      [email.toLowerCase()],
+      [email],
     );
 
     if (!user) {
@@ -75,9 +101,7 @@ router.post("/login", authLimiter, async (req, res) => {
     }
 
     // Generate JWT
-    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, {
-      expiresIn: TOKEN_EXPIRY,
-    });
+    const token = createJwtToken(user);
 
     // Store session
     const sessionId = uuidv4();
@@ -91,9 +115,9 @@ router.post("/login", authLimiter, async (req, res) => {
       [
         sessionId,
         user.id,
-        token.substring(token.length - 20),
+        hashToken(token),
         req.ip,
-        req.headers["user-agent"],
+        sanitizeString(req.headers["user-agent"] || "", 500),
         expiresAt.toISOString(),
       ],
     );
@@ -125,8 +149,11 @@ router.post("/login", authLimiter, async (req, res) => {
  */
 router.post("/logout", authenticate, (req, res) => {
   try {
-    // Delete session
-    run("DELETE FROM sessions WHERE user_id = ?", [req.user.id]);
+    // Invalidate only current session token
+    run("DELETE FROM sessions WHERE user_id = ? AND token_hash = ?", [
+      req.user.id,
+      hashToken(req.token),
+    ]);
 
     // Log logout
     logAudit(req.user.id, "logout", "auth", null, req);
@@ -159,11 +186,19 @@ router.get("/me", authenticate, (req, res) => {
  */
 router.post("/refresh", authenticate, (req, res) => {
   try {
-    const newToken = jwt.sign(
-      { userId: req.user.id, role: req.user.role },
-      JWT_SECRET,
-      { expiresIn: TOKEN_EXPIRY },
+    const newToken = createJwtToken(req.user);
+    const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    run(
+      `
+      UPDATE sessions
+      SET token_hash = ?, expires_at = ?
+      WHERE id = ?
+    `,
+      [hashToken(newToken), newExpiresAt.toISOString(), req.session.id],
     );
+
+    logAudit(req.user.id, "token_refresh", "auth", null, req);
 
     res.json({ token: newToken });
   } catch (error) {

@@ -83,8 +83,6 @@
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
-  opacity: 0;
-  animation: heroSlideUp 0.6s ease-out 0.2s forwards;
 }
 
 .l-hero__badge {
@@ -115,8 +113,6 @@
   line-height: 1.15;
   margin-bottom: var(--space-6);
   letter-spacing: -0.02em;
-  opacity: 0;
-  animation: heroSlideUp 0.6s ease-out 0.3s forwards;
 }
 
 .l-hero__subtitle {
@@ -124,16 +120,12 @@
   color: var(--text-tertiary);
   line-height: 1.7;
   margin-bottom: var(--space-8);
-  opacity: 0;
-  animation: heroSlideUp 0.6s ease-out 0.4s forwards;
 }
 
 .l-hero__ctas {
   display: flex;
   gap: var(--space-4);
   flex-wrap: wrap;
-  opacity: 0;
-  animation: heroSlideUp 0.6s ease-out 0.5s forwards;
 }
 
 .l-hero__ctas .c-btn i {
@@ -150,8 +142,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0;
-  animation: heroFadeIn 0.8s ease-out 0.4s forwards;
 }
 
 .l-hero__card {
@@ -344,26 +334,6 @@
   }
 }
 
-@keyframes heroSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes heroFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 /* Simpler float animation */
 @keyframes floatSimple {
   0%,
@@ -395,16 +365,6 @@
   /* Disable floating elements on mobile - too heavy */
   .l-hero__float {
     display: none;
-  }
-
-  /* Disable hero animations on mobile */
-  .l-hero__badges,
-  .l-hero__title,
-  .l-hero__subtitle,
-  .l-hero__ctas,
-  .l-hero__visual {
-    animation: none;
-    opacity: 1;
   }
 
   /* Disable gradient border animation */

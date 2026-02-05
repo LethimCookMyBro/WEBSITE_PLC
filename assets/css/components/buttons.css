@@ -11,9 +11,15 @@
   font-size: var(--text-sm);
   font-weight: 600;
   border-radius: var(--radius-lg);
-  transition: all var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
   position: relative;
   overflow: hidden;
+  will-change: transform;
 }
 
 /* Primary Button */
@@ -24,7 +30,7 @@
 }
 
 .c-btn--primary:hover {
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-2px) scale(1.01);
   box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
 }
 
@@ -43,7 +49,7 @@
 .c-btn--secondary:hover {
   background: var(--bg-secondary);
   border-color: var(--blue-300);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
@@ -112,5 +118,17 @@
       0 0 20px var(--blue-500),
       0 0 40px var(--blue-600),
       0 0 60px rgba(139, 92, 246, 0.3);
+  }
+}
+
+@media (hover: none) {
+  .c-btn--primary:hover,
+  .c-btn--secondary:hover {
+    transform: none;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  }
+
+  .c-btn:hover::before {
+    left: -100%;
   }
 }

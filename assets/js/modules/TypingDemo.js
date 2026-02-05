@@ -1,176 +1,263 @@
 /**
  * PANYA - Interactive Typing Demo
- * Simulates realistic AI chat typing effect in hero section
+ * Stable typing loop with cancellation support and Thai-safe grapheme typing.
  */
 
 class TypingDemo {
   constructor() {
     this.isActive = false;
-    this.typingSpeed = 30; // ms per character
-    this.pauseAfterUser = 800; // ms pause before AI responds
-    this.pauseAfterAI = 4000; // ms before loop restarts
+    this.runId = 0;
+    this.typingSpeed = 30;
+    this.pauseAfterUser = 800;
+    this.pauseAfterAI = 4000;
     this.heroCard = null;
+    this.timers = new Set();
+    this.segmenter =
+      typeof Intl !== "undefined" && typeof Intl.Segmenter === "function"
+        ? new Intl.Segmenter(undefined, { granularity: "grapheme" })
+        : null;
+
     this.init();
   }
 
   init() {
-    // Wait for components to load
     document.addEventListener("componentsLoaded", () => this.setup());
+    document.addEventListener("languageChanged", () => this.handleLanguageChange());
+    window.addEventListener("resize", () => this.handleViewportChange(), {
+      passive: true,
+    });
 
-    // Listen for language changes
-    document.addEventListener("languageChanged", () =>
-      this.handleLanguageChange(),
-    );
-
-    // Fallback
     if (document.readyState === "complete") {
-      setTimeout(() => this.setup(), 500);
+      this.schedule(() => this.setup(), 500);
     }
   }
 
-  handleLanguageChange() {
-    this.stop();
-    // Wait for I18n to update the text in the DOM
-    setTimeout(() => {
-      // Clear cached "original" text so we fetch new translated text
-      if (this.heroCard) {
-        const userChat = this.heroCard.querySelector(".l-hero__chat--user p");
-        const aiChat = this.heroCard.querySelector(".l-hero__chat--ai p");
-        if (userChat) userChat.removeAttribute("data-original");
-        if (aiChat) aiChat.removeAttribute("data-original");
-      }
-      this.startDemo();
-    }, 100);
+  schedule(callback, delayMs) {
+    const timerId = window.setTimeout(() => {
+      this.timers.delete(timerId);
+      callback();
+    }, delayMs);
+
+    this.timers.add(timerId);
+    return timerId;
+  }
+
+  clearTimers() {
+    this.timers.forEach((timerId) => window.clearTimeout(timerId));
+    this.timers.clear();
+  }
+
+  isDesktopViewport() {
+    return window.innerWidth > 768;
+  }
+
+  getChatElements() {
+    if (!this.heroCard) return null;
+
+    const userChat = this.heroCard.querySelector(".l-hero__chat--user p");
+    const aiChat = this.heroCard.querySelector(".l-hero__chat--ai p");
+    const citation = this.heroCard.querySelector(".l-hero__citation");
+    const aiBubble = aiChat?.parentElement || null;
+
+    if (!userChat || !aiChat || !aiBubble) return null;
+    return { userChat, aiChat, citation, aiBubble };
   }
 
   setup() {
     this.heroCard = document.querySelector(".l-hero__card-body");
     if (!this.heroCard) return;
 
-    // Only run on larger screens for performance (keep this check)
-    if (window.innerWidth <= 768) return;
-
-    // Wait for i18n to populate content
-    setTimeout(() => this.startDemo(), 1500);
-  }
-
-  async startDemo() {
-    // Ensure we don't have multiple loops running
-    this.stop();
-    this.isActive = true;
-
-    const userChat = this.heroCard.querySelector(".l-hero__chat--user p");
-    const aiChat = this.heroCard.querySelector(".l-hero__chat--ai p");
-    const citation = this.heroCard.querySelector(".l-hero__citation");
-
-    if (!userChat || !aiChat) return;
-
-    // Get text - check stored original first, then current textContent (which I18n just updated)
-    // IMPORTANT: On language change, we cleared data-original, so we will grab new textContent
-    let userText =
-      userChat.getAttribute("data-original") || userChat.textContent;
-    let aiText = aiChat.getAttribute("data-original") || aiChat.textContent;
-
-    // Validate text exists (i18n might not have loaded yet)
-    if (
-      !userText ||
-      !aiText ||
-      userText.trim() === "" ||
-      aiText.trim() === ""
-    ) {
-      //   console.log("TypingDemo: Waiting for i18n content...");
-      if (this.isActive) setTimeout(() => this.startDemo(), 500);
+    if (!this.isDesktopViewport()) {
+      this.stop();
+      this.restoreOriginalContent();
       return;
     }
 
-    // Save original (so we don't lose it when we clear for typing)
-    userChat.setAttribute("data-original", userText);
-    aiChat.setAttribute("data-original", aiText);
+    this.schedule(() => this.startDemo(), 1200);
+  }
 
-    // Run demo loop
-    while (this.isActive) {
-      // Clear content
-      userChat.textContent = "";
-      aiChat.textContent = "";
-      if (citation) citation.style.opacity = "0";
-      aiChat.parentElement.style.opacity = "0";
+  handleLanguageChange() {
+    this.stop();
 
-      // Type user message
-      await this.typeText(userChat, userText);
-      await this.sleep(this.pauseAfterUser);
-      if (!this.isActive) break; // Check interrupt
+    const elements = this.getChatElements();
+    if (elements) {
+      elements.userChat.removeAttribute("data-original");
+      elements.aiChat.removeAttribute("data-original");
+    }
 
-      // Show AI chat container with typing indicator
-      aiChat.parentElement.style.opacity = "1";
-      aiChat.innerHTML =
-        '<span class="typing-indicator"><span></span><span></span><span></span></span>';
-      await this.sleep(800);
-      if (!this.isActive) break;
+    this.schedule(() => this.startDemo(), 140);
+  }
 
-      // Type AI response
-      aiChat.textContent = "";
-      await this.typeText(aiChat, aiText);
-      if (!this.isActive) break;
+  handleViewportChange() {
+    if (!this.heroCard) {
+      this.setup();
+      return;
+    }
 
-      // Show citation with fade
-      if (citation) {
-        citation.style.transition = "opacity 0.3s ease";
-        citation.style.opacity = "1";
+    if (!this.isDesktopViewport()) {
+      this.stop();
+      this.restoreOriginalContent();
+      return;
+    }
+
+    if (!this.isActive) {
+      this.schedule(() => this.startDemo(), 300);
+    }
+  }
+
+  splitGraphemes(text) {
+    if (!text || typeof text !== "string") return [];
+    if (!this.segmenter) return Array.from(text);
+
+    return Array.from(this.segmenter.segment(text), (part) => part.segment);
+  }
+
+  restoreOriginalContent() {
+    const elements = this.getChatElements();
+    if (!elements) return;
+
+    const userOriginal =
+      elements.userChat.getAttribute("data-original") || elements.userChat.textContent || "";
+    const aiOriginal =
+      elements.aiChat.getAttribute("data-original") || elements.aiChat.textContent || "";
+
+    elements.userChat.textContent = userOriginal;
+    elements.aiChat.textContent = aiOriginal;
+    elements.aiBubble.style.opacity = "1";
+    if (elements.citation) {
+      elements.citation.style.opacity = "1";
+    }
+  }
+
+  async startDemo() {
+    if (!this.heroCard || !this.isDesktopViewport()) return;
+
+    this.stop();
+    this.isActive = true;
+    const currentRun = this.runId;
+
+    const elements = this.getChatElements();
+    if (!elements) return;
+
+    const userText =
+      elements.userChat.getAttribute("data-original") || elements.userChat.textContent || "";
+    const aiText =
+      elements.aiChat.getAttribute("data-original") || elements.aiChat.textContent || "";
+
+    if (!userText.trim() || !aiText.trim()) {
+      this.schedule(() => this.startDemo(), 300);
+      return;
+    }
+
+    elements.userChat.setAttribute("data-original", userText);
+    elements.aiChat.setAttribute("data-original", aiText);
+
+    while (this.isCurrentRun(currentRun)) {
+      elements.userChat.textContent = "";
+      elements.aiChat.textContent = "";
+      elements.aiBubble.style.opacity = "0";
+      if (elements.citation) {
+        elements.citation.style.opacity = "0";
       }
 
-      // Wait before looping
-      await this.sleep(this.pauseAfterAI);
+      await this.typeText(elements.userChat, userText, currentRun);
+      if (!this.isCurrentRun(currentRun)) return;
+
+      await this.sleep(this.pauseAfterUser, currentRun);
+      if (!this.isCurrentRun(currentRun)) return;
+
+      elements.aiBubble.style.opacity = "1";
+      elements.aiChat.innerHTML =
+        '<span class="typing-indicator"><span></span><span></span><span></span></span>';
+
+      await this.sleep(800, currentRun);
+      if (!this.isCurrentRun(currentRun)) return;
+
+      elements.aiChat.textContent = "";
+      await this.typeText(elements.aiChat, aiText, currentRun);
+      if (!this.isCurrentRun(currentRun)) return;
+
+      if (elements.citation) {
+        elements.citation.style.transition = "opacity 0.28s ease";
+        elements.citation.style.opacity = "1";
+      }
+
+      await this.sleep(this.pauseAfterAI, currentRun);
     }
   }
 
-  async typeText(element, text) {
-    if (!text || typeof text !== "string") return;
+  async typeText(element, text, runId) {
+    const graphemes = this.splitGraphemes(text);
 
-    for (let i = 0; i < text.length; i++) {
-      if (!this.isActive) return; // Immediate interrupt
-      element.textContent += text[i];
-      // Vary typing speed slightly for realism
-      const speed = this.typingSpeed + Math.random() * 20 - 10;
-      await this.sleep(speed);
+    for (let i = 0; i < graphemes.length; i += 1) {
+      if (!this.isCurrentRun(runId)) return;
+      element.textContent += graphemes[i];
+      const speed = this.typingSpeed + Math.random() * 16 - 8;
+      await this.sleep(speed, runId);
     }
   }
 
-  sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  sleep(ms, runId) {
+    return new Promise((resolve) => {
+      const timerId = window.setTimeout(() => {
+        this.timers.delete(timerId);
+        if (!this.isCurrentRun(runId)) {
+          resolve();
+          return;
+        }
+        resolve();
+      }, Math.max(0, Math.floor(ms)));
+      this.timers.add(timerId);
+    });
+  }
+
+  isCurrentRun(runId) {
+    return this.isActive && this.runId === runId;
   }
 
   stop() {
     this.isActive = false;
+    this.runId += 1;
+    this.clearTimers();
   }
 }
 
-// Add typing indicator CSS dynamically
-const style = document.createElement("style");
-style.textContent = `
-  .typing-indicator {
-    display: inline-flex;
-    gap: 4px;
-    padding: 8px 0;
-  }
-  .typing-indicator span {
-    width: 8px;
-    height: 8px;
-    background: var(--blue-400);
-    border-radius: 50%;
-    animation: typingBounce 1.4s ease-in-out infinite;
-  }
-  .typing-indicator span:nth-child(1) { animation-delay: 0s; }
-  .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-  .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes typingBounce {
-    0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-8px); }
-  }
-  .l-hero__chat--ai {
-    transition: opacity 0.3s ease;
-  }
-`;
-document.head.appendChild(style);
+function ensureTypingIndicatorStyles() {
+  if (document.getElementById("typing-demo-styles")) return;
 
-// Initialize
+  const style = document.createElement("style");
+  style.id = "typing-demo-styles";
+  style.textContent = `
+    .typing-indicator {
+      display: inline-flex;
+      gap: 4px;
+      padding: 8px 0;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: var(--blue-400);
+      border-radius: 50%;
+      animation: typingBounce 1.4s ease-in-out infinite;
+    }
+
+    .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .l-hero__chat--ai {
+      transition: opacity 0.3s ease;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+ensureTypingIndicatorStyles();
 window.typingDemo = new TypingDemo();
