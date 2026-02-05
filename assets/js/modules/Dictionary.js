@@ -1,4 +1,4 @@
-export const dictionary = {
+﻿export const dictionary = {
   en: {
     // Navigation
     nav_product: "Product",

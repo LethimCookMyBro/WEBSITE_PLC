@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Admin Dashboard JavaScript
  * Handles data loading, rendering, and UI interactions
  */

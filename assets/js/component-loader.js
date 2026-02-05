@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Component Loader for PANYA Website
  * Loads HTML components dynamically using fetch API
  */

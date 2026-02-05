@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PANYA - Intelligent RAG-Based Technical Support Assistant
  * Main JavaScript Application v2.0 (Modular Refactor)
  */

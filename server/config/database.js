@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Database Configuration
  * SQLite using sql.js with proper WASM loading
  */

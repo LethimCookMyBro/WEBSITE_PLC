@@ -1,4 +1,4 @@
-# PANYA - ระบบผู้ช่วยอัจฉริยะสำหรับการซ่อมบำรุง PLC (RAG-Based Technical Support)
+﻿# PANYA - ระบบผู้ช่วยอัจฉริยะสำหรับการซ่อมบำรุง PLC (RAG-Based Technical Support)
 
 **PANYA** คือเว็บไซต์ Landing Page ที่นำเสนอโซลูชัน AI สำหรับงานซ่อมบำรุงและดูแลรักษาระบบ PLC (Programmable Logic Controller) ในโรงงานอุตสาหกรรม โดยเน้นการออกแบบที่ทันสมัย สวยงาม และน่าเชื่อถือ เพื่อสื่อสารเทคโนโลยี RAG (Retrieval-Augmented Generation) ที่อยู่เบื้องหลังได้อย่างมีประสิทธิภาพ
 
