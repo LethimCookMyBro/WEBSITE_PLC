@@ -29,6 +29,12 @@ body {
     color var(--transition-base);
 }
 
+html.is-mobile-menu-open,
+body.is-mobile-menu-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 /* Thai Language Support */
 html[lang="th"] body {
   font-family: var(--font-thai);

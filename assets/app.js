@@ -44,6 +44,15 @@ function bindEvents() {
     AppState.closeMobileMenu();
   });
 
+  // Close mobile menu after selecting a mobile nav item
+  document
+    .querySelectorAll(".l-navbar__mobile-link, .l-navbar__mobile-cta")
+    .forEach((link) => {
+      link.addEventListener("click", () => {
+        AppState.closeMobileMenu();
+      });
+    });
+
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", ScrollHandler.smoothScroll);
@@ -138,6 +147,13 @@ function bindEvents() {
       !UI.elements.mobileMenu?.contains(e.target) &&
       !UI.elements.mobileMenuBtn?.contains(e.target)
     ) {
+      AppState.closeMobileMenu();
+    }
+  });
+
+  // Ensure overlay state resets when switching to desktop widths
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 1024 && AppState.isMobileMenuOpen) {
       AppState.closeMobileMenu();
     }
   });

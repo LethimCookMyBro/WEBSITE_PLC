@@ -3,6 +3,8 @@
 // ============================================
 export const UI = {
   elements: {},
+  scrollLockY: 0,
+  isBodyScrollLocked: false,
 
   cacheElements() {
     this.elements = {
@@ -37,7 +39,41 @@ export const UI = {
     mobileMenuBtn.setAttribute("aria-expanded", isOpen);
     mobileMenu.setAttribute("aria-hidden", !isOpen);
 
-    document.body.style.overflow = isOpen ? "hidden" : "";
+    if (isOpen) {
+      this.lockBodyScroll();
+    } else {
+      this.unlockBodyScroll();
+    }
+  },
+
+  lockBodyScroll() {
+    if (this.isBodyScrollLocked) return;
+
+    this.scrollLockY = window.scrollY || window.pageYOffset || 0;
+    document.documentElement.classList.add("is-mobile-menu-open");
+    document.body.classList.add("is-mobile-menu-open");
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${this.scrollLockY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+    this.isBodyScrollLocked = true;
+  },
+
+  unlockBodyScroll() {
+    if (!this.isBodyScrollLocked) return;
+
+    document.documentElement.classList.remove("is-mobile-menu-open");
+    document.body.classList.remove("is-mobile-menu-open");
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    document.body.style.overflow = "";
+    window.scrollTo(0, this.scrollLockY);
+    this.isBodyScrollLocked = false;
   },
 
   updateLangToggle(currentLang) {
