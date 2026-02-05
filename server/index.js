@@ -100,30 +100,54 @@ app.use(securityHeaders);
 app.use(attachRequestMetadata);
 
 // CORS - Configured for production
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
-  : ["http://localhost:3000", "http://127.0.0.1:3000"];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, etc.)
-      if (!origin) return callback(null, true);
-
-      if (
-        allowedOrigins.includes(origin) ||
-        process.env.NODE_ENV !== "production"
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+const allowedOrigins = new Set(
+  [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    ...(process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+      : []),
+    ...(process.env.APP_URL ? [process.env.APP_URL.trim()] : []),
+    ...(process.env.RAILWAY_PUBLIC_DOMAIN
+      ? [
+          `https://${process.env.RAILWAY_PUBLIC_DOMAIN.trim()}`,
+          `http://${process.env.RAILWAY_PUBLIC_DOMAIN.trim()}`,
+        ]
+      : []),
+  ].filter(Boolean),
 );
+
+function isSameHostOrigin(origin, req) {
+  try {
+    const originUrl = new URL(origin);
+    const forwardedHost =
+      req.headers["x-forwarded-host"]?.split(",")[0]?.trim() || "";
+    const host = (forwardedHost || req.headers.host || "").trim();
+    return !!host && originUrl.host === host;
+  } catch {
+    return false;
+  }
+}
+
+const corsOptionsDelegate = (req, callback) => {
+  const origin = req.headers.origin;
+  const isProduction = process.env.NODE_ENV === "production";
+
+  const isAllowed =
+    !origin ||
+    !isProduction ||
+    allowedOrigins.has(origin) ||
+    isSameHostOrigin(origin, req);
+
+  callback(null, {
+    origin: isAllowed ? (origin || true) : false,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Request-Id"],
+    exposedHeaders: ["X-Request-Id"],
+    maxAge: 600,
+  });
+};
 
 // Body parsing with strict size limits
 app.use(
@@ -147,6 +171,10 @@ app.use(sanitizeQuery);
 
 // Sanitize all incoming request bodies
 app.use(sanitizeBody);
+
+// Apply CORS for API routes only (avoid blocking static assets)
+app.use("/api", cors(corsOptionsDelegate));
+app.options("/api/*", cors(corsOptionsDelegate));
 
 // Rate limiting for API routes
 app.use("/api", apiLimiter);
