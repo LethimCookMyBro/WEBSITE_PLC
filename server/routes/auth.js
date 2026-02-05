@@ -11,6 +11,7 @@ import { queryOne, run } from "../config/database.js";
 import {
   authenticate,
   hashToken,
+  isJwtSecretReady,
   JWT_AUDIENCE,
   JWT_ISSUER,
   JWT_SECRET,
@@ -40,6 +41,12 @@ function createJwtToken(user) {
  */
 router.post("/login", authLimiter, async (req, res) => {
   try {
+    if (!isJwtSecretReady()) {
+      return res
+        .status(503)
+        .json({ error: "Authentication service not configured" });
+    }
+
     const email = sanitizeString(req.body?.email || "").toLowerCase();
     const password = typeof req.body?.password === "string" ? req.body.password : "";
 
@@ -186,6 +193,12 @@ router.get("/me", authenticate, (req, res) => {
  */
 router.post("/refresh", authenticate, (req, res) => {
   try {
+    if (!isJwtSecretReady()) {
+      return res
+        .status(503)
+        .json({ error: "Authentication service not configured" });
+    }
+
     const newToken = createJwtToken(req.user);
     const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 

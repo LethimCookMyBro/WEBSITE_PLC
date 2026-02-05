@@ -8,16 +8,18 @@ import jwt from "jsonwebtoken";
 import { queryOne } from "../config/database.js";
 
 const DEFAULT_DEV_SECRET = "panya-dev-secret-change-in-production";
-const JWT_SECRET = process.env.JWT_SECRET || DEFAULT_DEV_SECRET;
+const rawJwtSecret = process.env.JWT_SECRET;
+const JWT_SECRET = rawJwtSecret || DEFAULT_DEV_SECRET;
 export const JWT_ISSUER = process.env.JWT_ISSUER || "panya-api";
 export const JWT_AUDIENCE = process.env.JWT_AUDIENCE || "panya-admin";
+const isProduction = process.env.NODE_ENV === "production";
+const hasStrongJwtSecret =
+  typeof rawJwtSecret === "string" && rawJwtSecret.length >= 32;
 
-if (process.env.NODE_ENV === "production") {
-  if (JWT_SECRET === DEFAULT_DEV_SECRET || JWT_SECRET.length < 32) {
-    throw new Error(
-      "JWT_SECRET must be configured with at least 32 characters in production.",
-    );
-  }
+if (isProduction && !hasStrongJwtSecret) {
+  console.error(
+    "[SECURITY] JWT_SECRET is missing or weak (<32 chars). Auth routes will be unavailable until it is configured.",
+  );
 }
 
 export function hashToken(token) {
@@ -51,6 +53,12 @@ function getActiveSession(userId, tokenHash) {
  * Verify JWT token and attach user to request.
  */
 export function authenticate(req, res, next) {
+  if (isProduction && !hasStrongJwtSecret) {
+    return res.status(503).json({
+      error: "Authentication is temporarily unavailable",
+    });
+  }
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -113,6 +121,10 @@ export function requireRole(...roles) {
  * Optional authentication (doesn't fail when no/invalid token).
  */
 export function optionalAuth(req, res, next) {
+  if (isProduction && !hasStrongJwtSecret) {
+    return next();
+  }
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -148,3 +160,6 @@ export function optionalAuth(req, res, next) {
 }
 
 export { JWT_SECRET };
+export function isJwtSecretReady() {
+  return !isProduction || hasStrongJwtSecret;
+}
