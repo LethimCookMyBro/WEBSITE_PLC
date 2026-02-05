@@ -125,7 +125,7 @@ function renderLeads() {
     const badgeText = status === "new" ? "ใหม่" : status === "contacted" ? "ติดต่อแล้ว" : "เสร็จสิ้น";
 
     return `
-      <div class="list-item" onclick="showLead(${i})">
+      <div class="list-item" data-lead-index="${i}" role="button" tabindex="0">
         <div class="list-item__avatar">${l.name ? l.name.charAt(0) : "?"}</div>
         <div class="list-item__content">
           <p class="list-item__title">${l.name || "ไม่ระบุชื่อ"} — ${l.company || "ไม่ระบุบริษัท"}</p>
@@ -202,6 +202,59 @@ function closeModal() {
   document.getElementById("leadModal").classList.remove("modal--open");
 }
 
+function bindDashboardEvents() {
+  const logoutBtn = document.getElementById("logoutBtn");
+  const refreshBtn = document.getElementById("refreshBtn");
+  const exportBtn = document.getElementById("exportLeadsBtn");
+  const closeBtn = document.getElementById("closeLeadModalBtn");
+  const contactBtn = document.getElementById("contactLeadBtn");
+
+  logoutBtn?.addEventListener("click", async () => {
+    if (!confirm("ออกจากระบบ?")) return;
+    try {
+      await API.logout();
+    } catch (_) {
+      window.location.href = "login.html";
+    }
+  });
+
+  refreshBtn?.addEventListener("click", () => {
+    window.location.reload();
+  });
+
+  exportBtn?.addEventListener("click", exportLeads);
+  closeBtn?.addEventListener("click", closeModal);
+  contactBtn?.addEventListener("click", () => {
+    alert("โทรหาลูกค้า...");
+    closeModal();
+  });
+
+  document
+    .querySelector('[data-action="close-lead-modal"]')
+    ?.addEventListener("click", closeModal);
+
+  const leadsContainer = document.getElementById("leadsList");
+  leadsContainer?.addEventListener("click", (event) => {
+    const item = event.target.closest("[data-lead-index]");
+    if (!item) return;
+    const leadIndex = Number(item.dataset.leadIndex);
+    if (Number.isInteger(leadIndex)) {
+      showLead(leadIndex);
+    }
+  });
+
+  leadsContainer?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const item = event.target.closest("[data-lead-index]");
+    if (!item) return;
+    event.preventDefault();
+    const leadIndex = Number(item.dataset.leadIndex);
+    if (Number.isInteger(leadIndex)) {
+      showLead(leadIndex);
+    }
+  });
+}
+
 // ============================================
 // Export Functions
 // ============================================
@@ -237,6 +290,7 @@ function exportLeads() {
 // ============================================
 
 function initDashboard() {
+  bindDashboardEvents();
   loadLeads();
   loadAuditLogs();
   loadSecurityLogs();

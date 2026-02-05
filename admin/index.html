@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="css/admin.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -48,7 +47,7 @@
           <div class="sidebar__user-name">Admin</div>
           <div class="sidebar__user-role">ผู้ดูแลระบบ</div>
         </div>
-        <button class="sidebar__logout" onclick="if (confirm('ออกจากระบบ?')) location.href = 'login.html';">
+        <button class="sidebar__logout" id="logoutBtn" type="button">
           <i class="fas fa-sign-out-alt"></i>
         </button>
       </div>
@@ -61,7 +60,7 @@
           <h1 class="main__title">Sales Dashboard</h1>
           <p class="main__subtitle">ระบบจัดการลูกค้าและติดตามยอดขาย</p>
         </div>
-        <button class="main__refresh" onclick="location.reload()">
+        <button class="main__refresh" id="refreshBtn" type="button">
           <i class="fas fa-sync-alt"></i> รีเฟรช
         </button>
       </header>
@@ -114,7 +113,7 @@
             <h2 class="card__title">
               <i class="fas fa-user-plus"></i> ลูกค้าที่สนใจ
             </h2>
-            <button class="card__action" onclick="exportLeads()">
+            <button class="card__action" id="exportLeadsBtn" type="button">
               <i class="fas fa-download"></i> Export
             </button>
           </div>
@@ -159,14 +158,14 @@
     <div class="modal__content">
       <div class="modal__header">
         <h3 class="modal__title">รายละเอียดลูกค้า</h3>
-        <button class="modal__close" onclick="closeModal()">
+        <button class="modal__close" type="button" data-action="close-lead-modal">
           <i class="fas fa-times"></i>
         </button>
       </div>
       <div class="modal__body" id="leadDetail"></div>
       <div class="modal__footer">
-        <button class="btn" onclick="closeModal()">ปิด</button>
-        <button class="btn btn--success" onclick="alert('โทรหาลูกค้า...'); closeModal();">
+        <button class="btn" id="closeLeadModalBtn" type="button">ปิด</button>
+        <button class="btn btn--success" id="contactLeadBtn" type="button">
           <i class="fas fa-phone"></i> ติดต่อกลับ
         </button>
       </div>
