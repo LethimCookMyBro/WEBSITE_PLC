@@ -20,6 +20,7 @@ import bcrypt from "bcryptjs";
 
 // Routes
 import authRoutes from "./routes/auth.js";
+import auditRoutes from "./routes/audit.js";
 import leadsRoutes from "./routes/leads.js";
 
 // Security Middleware
@@ -186,6 +187,9 @@ app.use("/api/auth", noStore);
 
 app.use(express.static(path.join(__dirname, ".."), staticOptions));
 app.use("/admin", express.static(path.join(__dirname, "..", "admin"), staticOptions));
+app.get("/favicon.ico", (req, res) => {
+  res.status(204).end();
+});
 
 // ==========================================
 // API ROUTES
@@ -251,6 +255,7 @@ app.get("/api/dashboard/stats", statsLimiter, authenticate, (req, res) => {
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/leads", leadsRoutes);
+app.use("/api/audit", auditRoutes);
 
 // API 404
 app.use("/api/*", (req, res) => {

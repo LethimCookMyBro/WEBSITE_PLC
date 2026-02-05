@@ -23,6 +23,92 @@ if (!fs.existsSync(dataDir)) {
 let db = null;
 let SQL = null;
 
+const COMPATIBILITY_COLUMNS = {
+  users: [
+    ["role", "TEXT DEFAULT 'admin'"],
+    ["tenant_id", "TEXT"],
+    ["avatar", "TEXT"],
+    ["is_active", "INTEGER DEFAULT 1"],
+    ["created_at", "DATETIME"],
+    ["updated_at", "DATETIME"],
+  ],
+  sessions: [
+    ["token_hash", "TEXT"],
+    ["ip_address", "TEXT"],
+    ["user_agent", "TEXT"],
+    ["expires_at", "DATETIME"],
+    ["created_at", "DATETIME"],
+  ],
+  leads: [
+    ["status", "TEXT DEFAULT 'new'"],
+    ["notes", "TEXT"],
+    ["created_at", "DATETIME"],
+    ["updated_at", "DATETIME"],
+  ],
+  chat_logs: [
+    ["resolved", "INTEGER DEFAULT 1"],
+    ["response_time_ms", "INTEGER"],
+    ["created_at", "DATETIME"],
+  ],
+  audit_logs: [
+    ["resource", "TEXT"],
+    ["details", "TEXT"],
+    ["ip_address", "TEXT"],
+    ["user_agent", "TEXT"],
+    ["created_at", "DATETIME"],
+  ],
+};
+
+function getColumnSet(tableName) {
+  const result = db.exec(`PRAGMA table_info(${tableName})`);
+  if (!result.length) return new Set();
+
+  const info = result[0];
+  const nameIndex = info.columns.indexOf("name");
+  if (nameIndex === -1) return new Set();
+
+  return new Set(info.values.map((row) => String(row[nameIndex])));
+}
+
+function ensureColumns(tableName, columns) {
+  const existingColumns = getColumnSet(tableName);
+
+  for (const [columnName, columnDefinition] of columns) {
+    if (existingColumns.has(columnName)) continue;
+
+    db.run(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
+    console.log(`✅ Added missing column: ${tableName}.${columnName}`);
+  }
+}
+
+function backfillDefaults() {
+  const statements = [
+    "UPDATE users SET role = 'admin' WHERE role IS NULL OR role = ''",
+    "UPDATE users SET is_active = 1 WHERE is_active IS NULL",
+    "UPDATE users SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL",
+    "UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL",
+    "UPDATE leads SET status = 'new' WHERE status IS NULL OR status = ''",
+    "UPDATE leads SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL",
+    "UPDATE leads SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL",
+    "UPDATE chat_logs SET resolved = 1 WHERE resolved IS NULL",
+    "UPDATE chat_logs SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL",
+    "UPDATE sessions SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL",
+    "UPDATE audit_logs SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL",
+  ];
+
+  for (const sql of statements) {
+    db.run(sql);
+  }
+}
+
+function runCompatibilityMigrations() {
+  for (const [tableName, columns] of Object.entries(COMPATIBILITY_COLUMNS)) {
+    ensureColumns(tableName, columns);
+  }
+
+  backfillDefaults();
+}
+
 /**
  * Initialize database connection
  */
@@ -45,6 +131,9 @@ export async function initDatabase() {
     const schemaPath = path.join(__dirname, "..", "models", "schema.sql");
     const schema = fs.readFileSync(schemaPath, "utf-8");
     db.run(schema);
+
+    // Ensure old persisted databases remain compatible with current code.
+    runCompatibilityMigrations();
 
     // Enable foreign keys
     db.run("PRAGMA foreign_keys = ON");
